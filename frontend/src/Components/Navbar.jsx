@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Bell, User } from "lucide-react";
 import logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
+
+  const navigate = useNavigate();
 
   const tabs = [
     { name: "Home" },
@@ -41,7 +44,9 @@ const Navbar = () => {
 
         {/* Right-Side Actions */}
         <div className="flex items-center space-x-4">
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+          <button
+              onClick={()=>navigate('/login')} 
+              className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
             LOGIN
           </button>
           <button className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">

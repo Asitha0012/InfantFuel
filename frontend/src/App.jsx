@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from './Components/Navbar';
 import PageLayout from './pages/proceed';
+import Login from './pages/Login';
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Navbar/>}/>
         <Route path='/signin' element={<PageLayout/>}/>
+        <Route path='/login' element={<Login/>}/>
         {/* <Route path='/proceed' element={<PageLayout/>}/> */}
 
 
