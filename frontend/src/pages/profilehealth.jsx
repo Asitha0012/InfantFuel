@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Footer from "../Components/Footer";
+import Navbar from "../Components/Navbar";
 
 const Profilehealth = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +15,7 @@ const Profilehealth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <Navbar />
       <div className="max-w-6xl mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-indigo-600 mb-16">
           Setup Your Profile
@@ -189,7 +191,7 @@ const Profilehealth = () => {
         <div className="text-center mt-6">
           <span className="text-gray-600">If you already have an account</span>
           <a
-            href="#"
+            href="/login"
             className="text-indigo-500 font-medium ml-1 hover:text-indigo-700 transition-colors"
           >
             Login here!

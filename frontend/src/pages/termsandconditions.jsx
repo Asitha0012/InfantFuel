@@ -1,13 +1,13 @@
 import React from 'react'
 import Navbar from '../Components/Navbar'
 
-const Tracker = () => {
+const termsandconditions = () => {
   return (
     <div>
       <Navbar />
-      <h1>Tracker</h1>
+      <h1>terms and conditions </h1>
     </div>
   )
 }
 
-export default Tracker
+export default termsandconditions

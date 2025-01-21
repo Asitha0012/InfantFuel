@@ -9,12 +9,12 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const tabs = [
-    { name: "Home" },
-    { name: "Tracker" },
-    { name: "About" },
-    { name: "Support" },
-    { name: "Terms & Condition" },
-    { name: "Contact us" },
+    { name: "Home", path: "/home" },
+    { name: "Tracker", path: "/tracker" },
+    { name: "About", path: "/about" },
+    { name: "Support", path: "/support" },
+    { name: "Terms & Condition", path: "/termsandconditions" },
+    { name: "Contact us", path: "/contact" },
   ];
 
   return (
@@ -35,7 +35,10 @@ const Navbar = () => {
                   ? "text-white bg-orange-300 rounded-md"
                   : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
               }`}
-              onClick={() => setActiveTab(tab.name)}
+              onClick={() => {
+                setActiveTab(tab.name);
+                navigate(tab.path);
+              }}
             >
               {tab.name}
             </button>
@@ -45,11 +48,11 @@ const Navbar = () => {
         {/* Right-Side Actions */}
         <div className="flex items-center space-x-4">
           <button
-              onClick={()=>navigate('/login')} 
-              className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+            onClick={() => navigate('/login')} 
+            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
             LOGIN
           </button>
-          <button onClick={()=>navigate('/signin')} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+          <button onClick={() => navigate('/signin')} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
             SIGN UP
           </button>
           <button
@@ -85,7 +88,10 @@ const Navbar = () => {
                 ? "text-white bg-orange-200 rounded-md"
                 : "text-gray-700 hover:bg-orange-100 hover:text-gray-900"
             }`}
-            onClick={() => setActiveTab(tab.name)}
+            onClick={() => {
+              setActiveTab(tab.name);
+              navigate(tab.path);
+            }}
           >
             {tab.name}
           </button>

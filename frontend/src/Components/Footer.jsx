@@ -1,13 +1,13 @@
 const Footer = () => {
   return (
-    <footer className="bg-purple-600 text-white py-6 mt-16">
+    <footer className="bg-indigo-500 text-white py-6 mt-16">
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         {/* Logo and Title */}
         <div className="flex items-center space-x-4">
           <img
             src="assets/InfantFuel logo-02.png"
             alt="InfantFuel Logo"
-            className="w-20 h-20"
+            className="w-40 h-40"
           />
           <div>
             <h2 className="text-lg font-semibold">InfantFuel</h2>

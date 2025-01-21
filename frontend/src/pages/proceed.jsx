@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 const PageLayout = () => {
   const [selectedProfile, setSelectedProfile] = useState("");
@@ -91,7 +90,6 @@ const PageLayout = () => {
       
     </div>
     
-    {/* <Footer/> */}
     </div>
     
   );
@@ -183,6 +181,7 @@ const styles = {
     fontSize: "32px",
     marginBottom: "10px",
     color: "#A020F0",
+    fontWeight: "bold",
   },
   subHeading: {
     fontSize: "18px",

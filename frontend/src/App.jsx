@@ -6,18 +6,25 @@ import PageLayout from './pages/proceed';
 import Login from './pages/Login';
 import ProfileParent from './pages/profileparent';
 import Profilehealth from './pages/profilehealth';
+import Home from './pages/home';
+import Tracker from './pages/Tracker';
+import Contact from './pages/contact';
+import About from './pages/About';
 
 
 const App = () => {
   return (
     <Router>
-      {/* <Navbar/> */}
       <Routes>
+        <Route path="/home" element={<Home />} />
+        <Route path="/tracker" element={<Tracker />} />
         <Route path="/" element={<Navbar/>}/>
+        <Route path="/contact" element={<Contact />} />
         <Route path='/signin' element={<PageLayout/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/parentprofile' element={<ProfileParent/>}/>
         <Route path='/Profilehealth' element={<Profilehealth/>}/>
+        <Route path='/about' element={<About/>}/>
        
        
         {/* <Route path='/proceed' element={<PageLayout/>}/> */}
