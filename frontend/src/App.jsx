@@ -19,6 +19,7 @@ const App = () => {
         <Route path='/parentprofile' element={<ProfileParent/>}/>
         <Route path='/Profilehealth' element={<Profilehealth/>}/>
        
+       
         {/* <Route path='/proceed' element={<PageLayout/>}/> */}
 
 
