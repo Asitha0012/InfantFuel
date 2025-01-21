@@ -1,33 +1,79 @@
-import React from 'react';
-import logo from '../assets/logo.png';
-import { useNavigate } from 'react-router-dom';
+// src/components/Navbar.js
+import React, { useState } from "react";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("Home");
 
+  const tabs = [
+    { name: "Home" },
+    { name: "Tracker" },
+    { name: "About" },
+    { name: "Support" },
+    { name: "Terms & Condition" },
+    { name: "Contact us" },
+  ];
 
   return (
-    <nav className="w-full fixed top-0 left-0 flex items-center justify-between bg-white text-black py-1 px-4 z-10">
-      <img className='w-[230px]' src={logo} alt="" />
-      <ul className="flex space-x-6">
-        <li className="list-none text-sm">Home</li>
-        <li className="list-none text-sm">Tracker</li>
-        <li className="list-none text-sm">About</li>
-        <li className="list-none text-sm">Resources</li>
-        <li className="list-none text-sm">Support</li>
-        <li className="list-none text-sm">Terms & Conditions</li>
-        <li className="list-none text-sm">Contact Us</li>
-        <li>
-          <button className="btn bg-blue-500 text-white py-1 px-3 rounded"
-          onClick={()=>navigate("/login")}>Login</button>
-        </li>
+    <nav className="bg-white border-b-2 border-gray-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        {/* Logo */}
+        <div className="flex items-center">
+          <img src={logo} alt="InfantFuel Logo" className="h-10 w-auto" />
+        </div>
 
-        <li>
-          <button 
-          className="btn bg-green-500 text-white py-1 px-3 rounded"
-          onClick={()=>navigate("/signin")}>Sign Up</button>
-        </li>
-      </ul>
+        {/* Navigation Links */}
+        <div className="hidden md:flex space-x-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.name}
+              className={`px-3 py-2 text-sm font-medium ${
+                activeTab === tab.name
+                  ? "text-white bg-orange-300 rounded-md"
+                  : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
+              }`}
+              onClick={() => setActiveTab(tab.name)}
+            >
+              {tab.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Right-Side Actions */}
+        <div className="flex items-center space-x-4">
+          <button className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+            LOGIN
+          </button>
+          <button className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+            SIGN UP
+          </button>
+          <div className="flex items-center space-x-2">
+            <button className="text-gray-700 hover:text-gray-900">
+              <span className="material-icons">notifications</span>
+            </button>
+            <button className="text-gray-700 hover:text-gray-900">
+              <span className="material-icons">person</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div className="md:hidden flex flex-col space-y-2 px-4 py-2 border-t border-gray-200">
+        {tabs.map((tab) => (
+          <button
+            key={tab.name}
+            className={`block text-left px-3 py-2 text-sm font-medium ${
+              activeTab === tab.name
+                ? "text-white bg-orange-200 rounded-md"
+                : "text-gray-700 hover:bg-orange-100 hover:text-gray-900"
+            }`}
+            onClick={() => setActiveTab(tab.name)}
+          >
+            {tab.name}
+          </button>
+        ))}
+      </div>
     </nav>
   );
 };
