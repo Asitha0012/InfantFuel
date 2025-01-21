@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import Footer from "../Components/Footer";
-
+import { useNavigate } from "react-router-dom";
 const PageLayout = () => {
   const [selectedProfile, setSelectedProfile] = useState("");
-
+  const navigate = useNavigate();
   const handleSelection = (event) => {
     setSelectedProfile(event.target.value);
   };
 
   const onProceed = () => {
     if (selectedProfile === "Parents") {
+      navigate('/parentprofile')
       
     } else if (selectedProfile === "Healthcare Providers") {
-      
+      navigate('/Profilehealth')
     } else {
       alert("Please select a profile type before proceeding.");
     }
@@ -24,7 +25,7 @@ const PageLayout = () => {
     } else if (selectedProfile === "Healthcare Providers") {
       return "/assets/doctor_consultation_03.jpg"; 
     }
-    return "default-image-url.png"; 
+    return "src/assets/pagelayout.jpg"; 
   };
 
   return (
