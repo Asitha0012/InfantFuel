@@ -1,15 +1,14 @@
-
 import { useState } from "react";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
-const Login = () => {
+const ProfileParent = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <div className="max-w-6xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text  bg-indigo-600 mb-16">
+        <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-indigo-500 mb-16">
           Setup Your Profile
         </h1>
 
@@ -76,10 +75,12 @@ const Login = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={() => setShowPassword(true)}
+                    onMouseUp={() => setShowPassword(false)}
+                    onMouseLeave={() => setShowPassword(false)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    <EyeIcon className="h-5 w-5" />
+                    {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeOffIcon className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
@@ -96,10 +97,12 @@ const Login = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    onMouseDown={() => setShowConfirmPassword(true)}
+                    onMouseUp={() => setShowConfirmPassword(false)}
+                    onMouseLeave={() => setShowConfirmPassword(false)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    <EyeIcon className="h-5 w-5" />
+                    {showConfirmPassword ? <EyeIcon className="h-5 w-5" /> : <EyeOffIcon className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
@@ -206,12 +209,13 @@ const Login = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
                   Add a profile picture
                 </label>
-                <button className="w-full p-3 text-left rounded-lg border border-gray-200 hover:border-indigo-500 transition-colors duration-200">
-                  Select photo
-                </button>
+                <input
+                  type="file"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                />
               </div>
             </div>
           </div>
@@ -227,7 +231,7 @@ const Login = () => {
           <span className="text-gray-600">If you already have an account</span>
           <a
             href="#"
-            className="text-indigo-600 font-medium ml-1 hover:text-indigo-700 transition-colors"
+            className="text-indigo-500 font-medium ml-1 hover:text-indigo-700 transition-colors"
           >
             Login here!
           </a>
@@ -237,5 +241,4 @@ const Login = () => {
   );
 };
 
-export default Login;
-
+export default ProfileParent;

@@ -1,5 +1,4 @@
-// src/components/Navbar.js
-import{ useState } from "react";
+import { useState } from "react";
 import logo from "../assets/logo.png";
 
 const Navbar = () => {
@@ -15,11 +14,11 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white border-b-2 border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <nav className="bg-white border-b-4 border-orange-300 shadow-sm">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
         {/* Logo */}
         <div className="flex items-center">
-          <img src={logo} alt="InfantFuel Logo" className="h-10 w-auto" />
+          <img src={logo} alt="InfantFuel Logo" className="h-14 w-auto" />
         </div>
 
         {/* Navigation Links */}
@@ -27,7 +26,7 @@ const Navbar = () => {
           {tabs.map((tab) => (
             <button
               key={tab.name}
-              className={`px-3 py-2 text-sm font-medium ${
+              className={`px-5 py-4 text-sm font-medium ${
                 activeTab === tab.name
                   ? "text-white bg-orange-300 rounded-md"
                   : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
