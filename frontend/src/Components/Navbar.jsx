@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Bell, User } from "lucide-react";
 import logo from "../assets/logo.png";
 
 const Navbar = () => {
@@ -46,14 +47,26 @@ const Navbar = () => {
           <button className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
             SIGN UP
           </button>
-          <div className="flex items-center space-x-2">
-            <button className="text-gray-700 hover:text-gray-900">
-              <span className="material-icons">notifications</span>
-            </button>
-            <button className="text-gray-700 hover:text-gray-900">
-              <span className="material-icons">person</span>
-            </button>
-          </div>
+          <button
+            className={`px-5 py-4 text-sm font-medium ${
+              activeTab === "Notifications"
+                ? "text-white bg-orange-300 rounded-md"
+                : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
+            }`}
+            onClick={() => setActiveTab("Notifications")}
+          >
+            <Bell className="h-5 w-5" />
+          </button>
+          <button
+            className={`px-5 py-4 text-sm font-medium ${
+              activeTab === "Profile"
+                ? "text-white bg-orange-300 rounded-md"
+                : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
+            }`}
+            onClick={() => setActiveTab("Profile")}
+          >
+            <User className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
