@@ -1,76 +1,56 @@
-import React from "react";
-
 const Footer = () => {
   return (
-    <footer className="bg-purple-500 text-white py-6">
-      <div className="container mx-auto px-4 flex flex-col lg:flex-row justify-between items-center">
-        {/* Left Section */}
-        <div className="flex items-center mb-6 lg:mb-0">
+    <footer className="bg-purple-600 text-white py-6 mt-16">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+        {/* Logo and Title */}
+        <div className="flex items-center space-x-4">
           <img
-            src="/logo-placeholder.png" // Replace with the actual path to your logo
+            src="assets/InfantFuel logo-02.png"
             alt="InfantFuel Logo"
-            className="h-16 w-16 rounded-full mr-4"
+            className="w-20 h-20"
           />
           <div>
-            <h2 className="text-xl font-semibold">InfantFuel</h2>
+            <h2 className="text-lg font-semibold">InfantFuel</h2>
             <p className="text-sm">Infant Growth and Nutritional Wellness Tracker</p>
           </div>
         </div>
 
-        {/* Middle Section */}
-        <div className="text-center lg:text-left mb-6 lg:mb-0">
-          <p className="text-sm">
-            <i className="fas fa-map-marker-alt mr-2"></i>
-            345 Faulconer Drive, Suite 4, Charlottesville, CA, 12345
-          </p>
-          <p className="text-sm">
-            <i className="fas fa-phone-alt mr-2"></i>
-            (123) 456-7890
-          </p>
-          <p className="text-sm">
-            <i className="fas fa-envelope mr-2"></i>
-            InfantFuel@gmail.com
-          </p>
+        {/* Contact Details */}
+        <div className="text-sm mt-4 md:mt-0 text-center md:text-left">
+          <p><i className="fas fa-map-marker-alt mr-2"></i> 345 Faulconer Drive, Suite 4, Charlottesville, VA 12345</p>
+          <p><i className="fas fa-phone mr-2"></i> (123) 456-7890</p>
+          <p><i className="fas fa-envelope mr-2"></i> InfantFuel@xyz.com</p>
         </div>
 
-        {/* Right Section: Social Media */}
-        <div className="text-center lg:text-left">
-          <p className="mb-2">Social Media</p>
-          <div className="flex justify-center lg:justify-start space-x-4">
-            <a href="#" className="hover:text-gray-300">
-              <i className="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" className="hover:text-gray-300">
-              <i className="fab fa-twitter"></i>
-            </a>
-            <a href="#" className="hover:text-gray-300">
-              <i className="fab fa-linkedin-in"></i>
-            </a>
-            <a href="#" className="hover:text-gray-300">
-              <i className="fab fa-instagram"></i>
-            </a>
-          </div>
+        {/* Social Media Links */}
+        <div className="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" className="hover:text-indigo-200 transition-colors">
+            <i className="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">
+            <i className="fab fa-twitter"></i>
+          </a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">
+            <i className="fab fa-linkedin-in"></i>
+          </a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">
+            <i className="fab fa-instagram"></i>
+          </a>
         </div>
       </div>
 
-      {/* Bottom Section */}
-      <div className="border-t border-white mt-6 pt-4">
-        <div className="container mx-auto px-4 flex flex-col lg:flex-row justify-between text-center lg:text-left">
-          <div className="mb-4 lg:mb-0">
-            <a href="#" className="text-sm hover:underline">About Us</a> |{" "}
-            <a href="#" className="text-sm hover:underline">Contact Us</a> |{" "}
-            <a href="#" className="text-sm hover:underline">Help</a> |{" "}
-            <a href="#" className="text-sm hover:underline">Privacy Policy</a> |{" "}
-            <a href="#" className="text-sm hover:underline">Disclaimer</a> |{" "}
-            <a href="#" className="text-sm hover:underline">Articles</a>
-          </div>
-          <p className="text-sm">
-            Copyright © 2024 • EES206 Software Project
-          </p>
+      {/* Footer Bottom Links */}
+      <div className="border-t border-purple-500 mt-6 pt-4 text-center text-sm">
+        <div className="space-x-4">
+          <a href="#" className="hover:text-indigo-200 transition-colors">About Us</a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">Contact Us</a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">Privacy Policy</a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">Help</a>
+          <a href="#" className="hover:text-indigo-200 transition-colors">Articles</a>
         </div>
+        <p className="mt-4">© 2024 - EE5206 Software Project</p>
       </div>
     </footer>
   );
 };
-
 export default Footer;

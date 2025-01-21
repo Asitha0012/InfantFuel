@@ -87,7 +87,7 @@ function Login() {
                         </Form.Item>
 
                         <div className="text-center">
-                            Don't have an account ? <a href="" className='text-[#837EE9]'>Register here !</a>
+                            Don't have an account ?<a href="/signin" className='text-[#837EE9]'>Register here !</a> 
                         </div>
                     </Form>
                 </div>

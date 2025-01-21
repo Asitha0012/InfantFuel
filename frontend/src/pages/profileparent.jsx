@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import Footer from "../Components/Footer";
 
 const ProfileParent = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -237,6 +238,7 @@ const ProfileParent = () => {
           </a>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };
