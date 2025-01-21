@@ -1,25 +1,96 @@
-import React from 'react';
-import logo from '../assets/logo.png';
+import { useState } from "react";
+import { Bell, User } from "lucide-react";
+import logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const [activeTab, setActiveTab] = useState("Home");
+
+  const navigate = useNavigate();
+
+  const tabs = [
+    { name: "Home" },
+    { name: "Tracker" },
+    { name: "About" },
+    { name: "Support" },
+    { name: "Terms & Condition" },
+    { name: "Contact us" },
+  ];
+
   return (
-    <nav className="w-full fixed top-0 left-0 flex items-center justify-between bg-white text-black py-1 px-4 z-10">
-      <img className='w-[230px]' src={logo} alt="" />
-      <ul className="flex space-x-6">
-        <li className="list-none text-sm">Home</li>
-        <li className="list-none text-sm">Tracker</li>
-        <li className="list-none text-sm">About</li>
-        <li className="list-none text-sm">Resources</li>
-        <li className="list-none text-sm">Support</li>
-        <li className="list-none text-sm">Terms & Conditions</li>
-        <li className="list-none text-sm">Contact Us</li>
-        <li>
-          <button className="btn bg-blue-500 text-white py-1 px-3 rounded">Login</button>
-        </li>
-        <li>
-          <button className="btn bg-green-500 text-white py-1 px-3 rounded">Sign Up</button>
-        </li>
-      </ul>
+    <nav className="bg-white border-b-4 border-orange-300 shadow-sm">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
+        {/* Logo */}
+        <div className="flex items-center">
+          <img src={logo} alt="InfantFuel Logo" className="h-14 w-auto" />
+        </div>
+
+        {/* Navigation Links */}
+        <div className="hidden md:flex space-x-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.name}
+              className={`px-5 py-4 text-sm font-medium ${
+                activeTab === tab.name
+                  ? "text-white bg-orange-300 rounded-md"
+                  : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
+              }`}
+              onClick={() => setActiveTab(tab.name)}
+            >
+              {tab.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Right-Side Actions */}
+        <div className="flex items-center space-x-4">
+          <button
+              onClick={()=>navigate('/login')} 
+              className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+            LOGIN
+          </button>
+          <button onClick={()=>navigate('/signin')} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+            SIGN UP
+          </button>
+          <button
+            className={`px-5 py-4 text-sm font-medium ${
+              activeTab === "Notifications"
+                ? "text-white bg-orange-300 rounded-md"
+                : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
+            }`}
+            onClick={() => setActiveTab("Notifications")}
+          >
+            <Bell className="h-5 w-5" />
+          </button>
+          <button
+            className={`px-5 py-4 text-sm font-medium ${
+              activeTab === "Profile"
+                ? "text-white bg-orange-300 rounded-md"
+                : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
+            }`}
+            onClick={() => setActiveTab("Profile")}
+          >
+            <User className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div className="md:hidden flex flex-col space-y-2 px-4 py-2 border-t border-gray-200">
+        {tabs.map((tab) => (
+          <button
+            key={tab.name}
+            className={`block text-left px-3 py-2 text-sm font-medium ${
+              activeTab === tab.name
+                ? "text-white bg-orange-200 rounded-md"
+                : "text-gray-700 hover:bg-orange-100 hover:text-gray-900"
+            }`}
+            onClick={() => setActiveTab(tab.name)}
+          >
+            {tab.name}
+          </button>
+        ))}
+      </div>
     </nav>
   );
 };
