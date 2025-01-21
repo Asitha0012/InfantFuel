@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
-
 const Profilehealth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const districts = [
+    "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara",
+    "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar", "Matale", "Matara", "Monaragala", "Mullaitivu", "Nuwara Eliya",
+    "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -14,10 +19,10 @@ const Profilehealth = () => {
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {/* Parent/Guardian Details */}
+          {/* Left Side: Personal Details */}
           <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h2 className="text-2xl font-semibold text-gray-800 mb-8 pb-2 border-b border-gray-100">
-              Parent/Guardian Details
+              Healthcare Provider Details
             </h2>
             <div className="space-y-6">
               <div>
@@ -33,13 +38,36 @@ const Profilehealth = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Address <span className="text-rose-500">*</span>
+                  Workplace Address <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Address"
+                  placeholder="Workplace Address"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    District <span className="text-rose-500">*</span>
+                  </label>
+                  <select className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none">
+                    {districts.map((district) => (
+                      <option key={district} value={district}>{district}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Grama Niladhari Division <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Grama Niladhari Division"
+                    className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
+                  />
+                </div>
               </div>
 
               <div>
@@ -110,103 +138,32 @@ const Profilehealth = () => {
             </div>
           </div>
 
-          {/* Baby Details */}
+          {/* Right Side: Professional Details */}
           <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h2 className="text-2xl font-semibold text-gray-800 mb-8 pb-2 border-b border-gray-100">
-              Baby Details
+              Professional Details
             </h2>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full name <span className="text-rose-500">*</span>
+                  Position/Designation <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter Full Name"
+                  placeholder="Position/Designation"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Birth <span className="text-rose-500">*</span>
+                  Professional Registration Number <span className="text-rose-500">*</span>
                 </label>
                 <input
-                  type="date"
+                  type="text"
+                  placeholder="Professional Registration Number"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender <span className="text-rose-500">*</span>
-                </label>
-                <div className="flex space-x-6">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="gender"
-                      className="w-4 h-4 text-indigo-600"
-                    />
-                    <span>Boy</span>
-                  </label>
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="gender"
-                      className="w-4 h-4 text-indigo-600"
-                    />
-                    <span>Girl</span>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Birth weight <span className="text-rose-500">*</span>
-                </label>
-                <div className="flex space-x-4">
-                  <input
-                    type="number"
-                    placeholder="kg"
-                    className="w-32 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
-                  />
-                  <input
-                    type="number"
-                    placeholder="g"
-                    className="w-32 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Birth Height/Length
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="number"
-                    placeholder="cm"
-                    className="w-32 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Blood Group (optional)
-                </label>
-                <select className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none">
-                  <option value="">Select</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
               </div>
 
               <div>
