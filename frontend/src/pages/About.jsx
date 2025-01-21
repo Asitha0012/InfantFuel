@@ -1,6 +1,6 @@
 import React from 'react';
 import { Ruler, Layout, Share2, Edit, FileText } from 'lucide-react';
-import Image from '../assets/InfantFuel logo-02.png';
+import Image from '../assets/InfantFuel logo-01.png';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 
@@ -10,7 +10,7 @@ const WelcomeSection = () => {
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-300 via-purple-300 to-stone-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-300 via-purple-300 to-stone-600 bg-clip-text text-transparent pt-10">
               Welcome<br />to InfantFuel
             </h1>
             <div className="max-w-lg space-y-4 text-black">
@@ -24,9 +24,9 @@ const WelcomeSection = () => {
           </div>
           <div className="w-48 h-48 flex items-center justify-center rounded-full bg-transparent">
             <img 
-              src={Image}  
-              alt="Mother and baby illustration" 
-              className="w-full h-full object-cover  rounded-full border-none shadow-none"
+             src={Image}  
+             alt="InfantFuel Logo" 
+             className="w-200 h-200 object-cover rounded-full border-none shadow-none mt-10"
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ const FeatureCard = ({ title, description, icons, iconPosition }) => (
   const FeaturesSectionPart1 = () => (
     <div className="bg-[#db7e6c] py-12">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="space-y-8">
+        <div className="space-y-8 ">
           <FeatureCard
             title="Growth Tracking"
             description="Monitor and track your infant's height, weight, and other growth parameters."
@@ -81,10 +81,10 @@ const FeatureCard = ({ title, description, icons, iconPosition }) => (
   );
   
   const FeaturesSectionPart2 = () => (
-    <div className="bg-[#b88f87] py-12">
+    <div className="bg-orange-200 py-12">
       <div className="max-w-5xl mx-auto px-6">
         <div className="space-y-8">
-          <FeatureCard
+          <FeatureCard 
             title="Interactive Dashboard"
             description="Easy-to-read charts and vaccination records at your fingertips."
             icons={[Share2]}
