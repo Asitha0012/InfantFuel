@@ -42,8 +42,8 @@ const Footer = () => {
       {/* Footer Bottom Links */}
       <div className="border-t border-purple-500 mt-6 pt-4 text-center text-sm">
         <div className="space-x-4">
-          <a href="#" className="hover:text-indigo-200 transition-colors">About Us</a>
-          <a href="#" className="hover:text-indigo-200 transition-colors">Contact Us</a>
+          <a href="/about" className="hover:text-indigo-200 transition-colors">About Us</a>
+          <a href="/contact" className="hover:text-indigo-200 transition-colors">Contact Us</a>
           <a href="#" className="hover:text-indigo-200 transition-colors">Privacy Policy</a>
           <a href="#" className="hover:text-indigo-200 transition-colors">Help</a>
           <a href="#" className="hover:text-indigo-200 transition-colors">Articles</a>
