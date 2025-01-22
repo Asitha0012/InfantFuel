@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Bell, User } from "lucide-react";
 import logo from "../assets/logo.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { name: "Home", path: "/home" },
     { name: "Tracker", path: "/tracker" },
     { name: "About", path: "/about" },
     { name: "Support", path: "/support" },
     { name: "Terms & Condition", path: "/termsandconditions" },
     { name: "Contact us", path: "/contact" },
-  ];
+  ], []);
+
+  useEffect(() => {
+    const currentTab = tabs.find(tab => tab.path === location.pathname);
+    if (currentTab) {
+      setActiveTab(currentTab.name);
+    }
+  }, [location.pathname, tabs]);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab.name);
+    navigate(tab.path);
+  };
 
   return (
     <nav className="bg-white border-b-4 border-orange-300 shadow-sm">
@@ -24,21 +38,15 @@ const Navbar = () => {
         <div className="flex items-center">
           <img src={logo} alt="InfantFuel Logo" className="h-14 w-auto" />
         </div>
-
-        {/* Navigation Links */}
-        <div className="hidden md:flex space-x-4">
+        {/* Tabs */}
+        <div className="flex space-x-4">
           {tabs.map((tab) => (
             <button
               key={tab.name}
-              className={`px-5 py-4 text-sm font-medium ${
-                activeTab === tab.name
-                  ? "text-white bg-orange-300 rounded-md"
-                  : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
-              }`}
-              onClick={() => {
-                setActiveTab(tab.name);
-                navigate(tab.path);
-              }}
+              onClick={() => handleTabClick(tab)}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${
+                activeTab === tab.name ? "text-white bg-orange-400 rounded-md" : "text-gray-700"
+              } hover:border-b-2 hover:border-orange-400`}
             >
               {tab.name}
             </button>
@@ -58,7 +66,7 @@ const Navbar = () => {
           <button
             className={`px-5 py-4 text-sm font-medium ${
               activeTab === "Notifications"
-                ? "text-white bg-orange-300 rounded-md"
+                ? "text-white bg-orange-400 rounded-md"
                 : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("Notifications")}
@@ -68,7 +76,7 @@ const Navbar = () => {
           <button
             className={`px-5 py-4 text-sm font-medium ${
               activeTab === "Profile"
-                ? "text-white bg-orange-300 rounded-md"
+                ? "text-white bg-orange-400 rounded-md"
                 : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("Profile")}
@@ -85,7 +93,7 @@ const Navbar = () => {
             key={tab.name}
             className={`block text-left px-3 py-2 text-sm font-medium ${
               activeTab === tab.name
-                ? "text-white bg-orange-200 rounded-md"
+                ? "text-white bg-orange-400 rounded-md"
                 : "text-gray-700 hover:bg-orange-100 hover:text-gray-900"
             }`}
             onClick={() => {
