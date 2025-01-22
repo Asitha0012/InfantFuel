@@ -12,7 +12,7 @@ function Login() {
     return (
         <div className='flex justify-start h-lvh'>
             <div className='w-1/2 relative'>
-                <p className='absolute top-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 text-center text-sm text-[#6F4948]'>
+                <p className='absolute top-[60%] mt-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 text-center text-sm text-[#6F4948]'>
                     Infant Growth and Nutritional Wellness Tracker
                 </p>
                 <p className='absolute top-[90%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 text-center text-xs text-[#6F4948]'>

@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from '../Components/Navbar'
 
-const termsandconditions = () => {
+const Termsandconditions = () => {
   return (
     <div>
       <Navbar />
@@ -10,4 +10,4 @@ const termsandconditions = () => {
   )
 }
 
-export default termsandconditions
+export default Termsandconditions

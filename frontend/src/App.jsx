@@ -8,7 +8,9 @@ import Home from './pages/home';
 import Tracker from './pages/Tracker';
 import Contact from './pages/contact';
 import About from './pages/About';
-
+import Footer from './Components/Footer';
+import Support from './pages/support';
+import Termsandconditions from './pages/termsandconditions';
 
 const App = () => {
   return (
@@ -23,6 +25,9 @@ const App = () => {
         <Route path='/parentprofile' element={<ProfileParent/>}/>
         <Route path='/Profilehealth' element={<Profilehealth/>}/>
         <Route path='/about' element={<About/>}/>
+        <Route path='/support' element={<Support/>}/>
+        <Route path='/termsandconditions' element={<Termsandconditions/>}/>
+
        
        
         {/* <Route path='/proceed' element={<PageLayout/>}/> */}

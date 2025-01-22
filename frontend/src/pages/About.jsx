@@ -26,7 +26,7 @@ const WelcomeSection = () => {
             <img 
              src={Image}  
              alt="InfantFuel Logo" 
-             className="w-200 h-200 object-cover rounded-full border-none shadow-none mt-10"
+             className="w-[300px] h-[300px] object-contain rounded-full"
             />
           </div>
         </div>
