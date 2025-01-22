@@ -10,6 +10,8 @@ import Home from './pages/home';
 import Tracker from './pages/Tracker';
 import Contact from './pages/contact';
 import About from './pages/About';
+import Support from './pages/support';
+
 
 
 const App = () => {
@@ -25,6 +27,8 @@ const App = () => {
         <Route path='/parentprofile' element={<ProfileParent/>}/>
         <Route path='/Profilehealth' element={<Profilehealth/>}/>
         <Route path='/about' element={<About/>}/>
+        <Route path='/support' element={<Support/>}/>
+
        
        
         {/* <Route path='/proceed' element={<PageLayout/>}/> */}

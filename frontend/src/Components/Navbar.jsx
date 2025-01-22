@@ -3,6 +3,7 @@ import { Bell, User } from "lucide-react";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
+
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
 
@@ -12,7 +13,7 @@ const Navbar = () => {
     { name: "Home", path: "/home" },
     { name: "Tracker", path: "/tracker" },
     { name: "About", path: "/about" },
-    { name: "Support", path: "/support" },
+    { name: "Support", path: "/Support" },
     { name: "Terms & Condition", path: "/termsandconditions" },
     { name: "Contact us", path: "/contact" },
   ];
