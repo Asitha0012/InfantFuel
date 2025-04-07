@@ -4,13 +4,15 @@ import Login from './pages/Login';
 import ProfileParent from './pages/profileparent';
 import Profilehealth from './pages/profilehealth';
 import Home from './pages/home';
-import Tracker from './pages/Tracker';
+import Tracker from './pages/Tracker'; 
 import Contact from './pages/contact';
 import About from './pages/About';
 import Footer from './Components/Footer';
 import Support from './pages/support';
 import Termsandconditions from './pages/termsandconditions';
-
+import Profile from './pages/profile';
+import Notification from './pages/notification';
+import GrowthTracking from './pages/growthtracking';
 const App = () => {
   return (
     <Router>
@@ -26,6 +28,10 @@ const App = () => {
         <Route path='/about' element={<About/>}/>
         <Route path='/support' element={<Support/>}/>
         <Route path='/termsandconditions' element={<Termsandconditions/>}/>
+        <Route path='/profile' element={<Profile/>}/>
+        <Route path='/notification' element={<Notification/>}/>
+        <Route path="/growth-tracking" element={<GrowthTracking />} />
+
 
        
        

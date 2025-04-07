@@ -168,20 +168,14 @@ const Home = () => {
               className="w-full h-auto rounded-2xl shadow-lg"
               />
             </div>
-            <footer/>
+           
           </div>
           
         </div>
-<<<<<<< Updated upstream
-      </section>
-      <Footer/>
-=======
-        
-      </section>
-      <Footer/>
-     
->>>>>>> Stashed changes
 
+
+      </section>
+      <Footer/>
     </div>
   );
 };

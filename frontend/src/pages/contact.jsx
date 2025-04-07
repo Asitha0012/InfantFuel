@@ -1,22 +1,14 @@
-<<<<<<< Updated upstream
-import React from 'react'
-import Navbar from '../Components/Navbar'
-import Footer from '../Components/Footer'
-=======
+
+import React from 'react';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
->>>>>>> Stashed changes
 
-const contact = () => {
+
+const ContactUs = () => {
   return (
-    <>
-    <div>
+    <div className="min-h-screen bg-white text-gray-800">
       <Navbar />
-<<<<<<< Updated upstream
-      <h1>contact us</h1>
     
-    
-=======
       <div className="px-6 py-12 md:px-16 lg:px-32">
         <h1 className="text-4xl font-bold text-center text-purple-600 mb-8">Contact Us</h1>
         
@@ -65,11 +57,8 @@ const contact = () => {
         </form>
       </div>
      <Footer />
->>>>>>> Stashed changes
     </div>
-    
-    </>
-  )
-}
+  );
+};
 
-export default contact
+export default ContactUs;
