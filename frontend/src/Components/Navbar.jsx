@@ -12,7 +12,7 @@ const Navbar = () => {
   const location = useLocation();
 
   const tabs = useMemo(() => [
-    { name: "Home", path: "/home" },
+    { name: "Home", path: "/" },
     { name: "Tracker", path: "/tracker" },
     { name: "About", path: "/about" },
     { name: "Support", path: "/Support" },

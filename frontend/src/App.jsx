@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './Components/Navbar';
 import PageLayout from './pages/proceed';
 import Login from './pages/Login';
 import ProfileParent from './pages/profileparent';
@@ -16,7 +15,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/tracker" element={<Tracker />} />
         <Route path="/" element={<><Home /><Footer /></>} /> {/* Default route */}
         <Route path="/contact" element={<Contact />} />
