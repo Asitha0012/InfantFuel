@@ -2,7 +2,6 @@ import React from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Flex } from 'antd';
 import img1 from '../assets/InfantFuel logo-02.png';
-// import img1 from '../'
 
 function Login() {
     const onFinish = (values) => {
@@ -87,7 +86,7 @@ function Login() {
                         </Form.Item>
 
                         <div className="text-center">
-                            Don't have an account ?<a href="/signin" className='text-[#837EE9]'>Register here !</a> 
+                            Don&apos;t have an account ?<a href="/signin" className='text-[#837EE9]'>Register here !</a> 
                         </div>
                     </Form>
                 </div>

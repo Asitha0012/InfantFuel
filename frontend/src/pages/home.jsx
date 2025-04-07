@@ -172,10 +172,10 @@ const Home = () => {
           </div>
           
         </div>
-        <Footer/>
-      </section>
-     
 
+
+      </section>
+      <Footer/>
     </div>
   );
 };

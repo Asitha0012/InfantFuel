@@ -18,7 +18,7 @@ const WelcomeSection = () => {
                 We empower parents and healthcare providers with tools to monitor and enhance infant growth and nutritional insights.
               </p>
               <p>
-                Our platform is designed to track key health metrics, provide personalized insights, and ensure your little one's development stays on the right path.
+                Our platform is designed to track key health metrics, provide personalized insights, and ensure your little one&apos;s development stays on the right path.
               </p>
             </div>
           </div>
