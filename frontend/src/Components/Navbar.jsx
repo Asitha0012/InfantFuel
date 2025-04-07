@@ -3,8 +3,6 @@ import { Bell, User } from "lucide-react";
 import logo from "../assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
 
@@ -80,7 +78,10 @@ const Navbar = () => {
                 ? "text-white bg-orange-400 rounded-md"
                 : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
             }`}
-            onClick={() => setActiveTab("Profile")}
+            onClick={() => {
+              setActiveTab("Profile");
+              navigate('/profile'); // 🔥 Navigate to Profile page
+            }}
           >
             <User className="h-5 w-5" />
           </button>

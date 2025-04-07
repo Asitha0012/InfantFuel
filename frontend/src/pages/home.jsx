@@ -169,12 +169,13 @@ const Home = () => {
               className="w-full h-auto rounded-2xl shadow-lg"
               />
             </div>
-            <footer/>
+           
           </div>
           
         </div>
+        <Footer/>
       </section>
-      <Footer/>
+     
 
     </div>
   );
