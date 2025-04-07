@@ -1,11 +1,14 @@
+
 import React from 'react';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
+
 
 const ContactUs = () => {
   return (
     <div className="min-h-screen bg-white text-gray-800">
       <Navbar />
+    
       <div className="px-6 py-12 md:px-16 lg:px-32">
         <h1 className="text-4xl font-bold text-center text-purple-600 mb-8">Contact Us</h1>
         
@@ -53,7 +56,7 @@ const ContactUs = () => {
           </div>
         </form>
       </div>
-     
+     <Footer />
     </div>
   );
 };
