@@ -1,4 +1,3 @@
-import React from 'react';
 import Navbar from '../Components/Navbar';
 import googlePlay from '../assets/google-play.png';
 import hero from '../assets/hero.png';
@@ -82,7 +81,7 @@ const Home = () => {
               </h2>
               <div className="space-y-4 text-lg text-gray-700">
                 <p>
-                  Monitor your Infant's growth by recording key indicators like weight, height, head Circumference, and BMI. Visualize trends over time and compare them with standardized growth charts to ensure healthy development.
+                  Monitor your Infant&apos;s growth by recording key indicators like weight, height, head Circumference, and BMI. Visualize trends over time and compare them with standardized growth charts to ensure healthy development.
                 </p>
               </div>
             </div>
@@ -100,7 +99,7 @@ const Home = () => {
               </h2>
               <div className="space-y-4 text-xl text-gray-700">
                 <p>
-                  Log Daily Nutritional Intake to see if it meets recommended dietary guidelines. Receive personalized recommendations to optimize your baby's nutritional wellbeing.
+                  Log Daily Nutritional Intake to see if it meets recommended dietary guidelines. Receive personalized recommendations to optimize your baby&apos;s nutritional wellbeing.
                 </p>
               </div>
             </div>
@@ -137,7 +136,7 @@ const Home = () => {
               </h2>
               <div className="space-y-4 text-lg text-gray-700">
                 <p>
-                Generate detialed reports and visualize dynamic growth charts to track your infant's progress over time. Compare growth patterns against standardized benchmarks. Identify trends, and receive alerts for any deviations.
+                Generate detialed reports and visualize dynamic growth charts to track your infant&apos;s progress over time. Compare growth patterns against standardized benchmarks. Identify trends, and receive alerts for any deviations.
                  
                 </p>
               </div>
@@ -156,7 +155,7 @@ const Home = () => {
               </h2>
               <div className="space-y-4 text-xl text-gray-700">
                 <p>
-                Keep track of your baby's vaccination schedule with ease. Get reminders for upcoming vaccines. Maintain a digital record of completed immunizations, and access essential information about each vaccine to ensure your little one stays protected and healthy. 
+                Keep track of your baby&apos;s vaccination schedule with ease. Get reminders for upcoming vaccines. Maintain a digital record of completed immunizations, and access essential information about each vaccine to ensure your little one stays protected and healthy. 
                 </p>
               </div>
             </div>
