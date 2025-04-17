@@ -20,7 +20,7 @@ const Notification = () => {
           {/* Sample Notifications */}
           <ul className="space-y-4 text-gray-700">
             <li className="bg-orange-50 p-4 rounded-lg shadow-sm">
-              🍼 Your baby's growth tracker has been updated.
+              🍼 Your baby&apos;s growth tracker has been updated.
             </li>
             <li className="bg-orange-50 p-4 rounded-lg shadow-sm">
               📅 Reminder: Next health checkup is scheduled for April 12, 2025.
