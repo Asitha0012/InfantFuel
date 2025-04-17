@@ -4,8 +4,56 @@ import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 
 const ProfileParent = () => {
+  const [formData, setFormData] = useState({
+    parentFullName: "",
+    address: "",
+    contactNumber: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    babyFullName: "",
+    dateOfBirth: "",
+    gender: "",
+    birthWeightKg: "",
+    birthWeightG: "",
+    height: "",
+    bloodGroup: "",
+  });
+
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: "" }); // Clear error message when user starts typing
+  };
+
+  const handleRegister = () => {
+    const newErrors = {};
+
+    // Validate required fields
+    if (!formData.parentFullName) newErrors.parentFullName = "Parent/Guardian full name is required.";
+    if (!formData.address) newErrors.address = "Address is required.";
+    if (!formData.contactNumber) newErrors.contactNumber = "Contact number is required.";
+    if (!formData.email) newErrors.email = "Email is required.";
+    if (!formData.password) newErrors.password = "Password is required.";
+    if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password.";
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (!formData.babyFullName) newErrors.babyFullName = "Baby's full name is required.";
+    if (!formData.dateOfBirth) newErrors.dateOfBirth = "Baby's date of birth is required.";
+    if (!formData.gender) newErrors.gender = "Baby's gender is required.";
+    if (!formData.birthWeightKg && !formData.birthWeightG) newErrors.birthWeight = "Baby's birth weight is required.";
+
+    setErrors(newErrors);
+
+    // If no errors, proceed with form submission
+    if (Object.keys(newErrors).length === 0) {
+      console.log("Form submitted successfully:", formData);
+      // Add your form submission logic here
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -28,9 +76,13 @@ const ProfileParent = () => {
                 </label>
                 <input
                   type="text"
+                  name="parentFullName"
+                  value={formData.parentFullName}
+                  onChange={handleInputChange}
                   placeholder="Enter Full Name"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+                {errors.parentFullName && <p className="text-sm text-red-500 mt-1">{errors.parentFullName}</p>}
               </div>
 
               <div>
@@ -39,9 +91,13 @@ const ProfileParent = () => {
                 </label>
                 <input
                   type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
                   placeholder="Address"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+                {errors.address && <p className="text-sm text-red-500 mt-1">{errors.address}</p>}
               </div>
 
               <div>
@@ -50,9 +106,13 @@ const ProfileParent = () => {
                 </label>
                 <input
                   type="tel"
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleInputChange}
                   placeholder="Contact number"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+                {errors.contactNumber && <p className="text-sm text-red-500 mt-1">{errors.contactNumber}</p>}
               </div>
 
               <div>
@@ -61,9 +121,13 @@ const ProfileParent = () => {
                 </label>
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   placeholder="Enter Email"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
               </div>
 
               <div>
@@ -73,6 +137,9 @@ const ProfileParent = () => {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
                     placeholder="Set Password"
                     className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                   />
@@ -86,6 +153,7 @@ const ProfileParent = () => {
                     {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeOffIcon className="h-5 w-5" />}
                   </button>
                 </div>
+                {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
               </div>
 
               <div>
@@ -95,6 +163,9 @@ const ProfileParent = () => {
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
                     placeholder="Confirm Password"
                     className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                   />
@@ -108,6 +179,7 @@ const ProfileParent = () => {
                     {showConfirmPassword ? <EyeIcon className="h-5 w-5" /> : <EyeOffIcon className="h-5 w-5" />}
                   </button>
                 </div>
+                {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>}
               </div>
             </div>
           </div>
@@ -124,9 +196,13 @@ const ProfileParent = () => {
                 </label>
                 <input
                   type="text"
+                  name="babyFullName"
+                  value={formData.babyFullName}
+                  onChange={handleInputChange}
                   placeholder="Enter Full Name"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+                {errors.babyFullName && <p className="text-sm text-red-500 mt-1">{errors.babyFullName}</p>}
               </div>
 
               <div>
@@ -135,8 +211,12 @@ const ProfileParent = () => {
                 </label>
                 <input
                   type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleInputChange}
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
+                {errors.dateOfBirth && <p className="text-sm text-red-500 mt-1">{errors.dateOfBirth}</p>}
               </div>
 
               <div>
@@ -148,6 +228,8 @@ const ProfileParent = () => {
                     <input
                       type="radio"
                       name="gender"
+                      value="Boy"
+                      onChange={handleInputChange}
                       className="w-4 h-4 text-indigo-600"
                     />
                     <span>Boy</span>
@@ -156,11 +238,14 @@ const ProfileParent = () => {
                     <input
                       type="radio"
                       name="gender"
+                      value="Girl"
+                      onChange={handleInputChange}
                       className="w-4 h-4 text-indigo-600"
                     />
                     <span>Girl</span>
                   </label>
                 </div>
+                {errors.gender && <p className="text-sm text-red-500 mt-1">{errors.gender}</p>}
               </div>
 
               <div>
@@ -170,15 +255,22 @@ const ProfileParent = () => {
                 <div className="flex space-x-4">
                   <input
                     type="number"
+                    name="birthWeightKg"
+                    value={formData.birthWeightKg}
+                    onChange={handleInputChange}
                     placeholder="kg"
                     className="w-32 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                   />
                   <input
                     type="number"
+                    name="birthWeightG"
+                    value={formData.birthWeightG}
+                    onChange={handleInputChange}
                     placeholder="g"
                     className="w-32 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                   />
                 </div>
+                {errors.birthWeight && <p className="text-sm text-red-500 mt-1">{errors.birthWeight}</p>}
               </div>
 
               <div>
@@ -188,6 +280,9 @@ const ProfileParent = () => {
                 <div className="flex space-x-2">
                   <input
                     type="number"
+                    name="height"
+                    value={formData.height}
+                    onChange={handleInputChange}
                     placeholder="cm"
                     className="w-32 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                   />
@@ -198,7 +293,12 @@ const ProfileParent = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Blood Group (optional)
                 </label>
-                <select className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none">
+                <select
+                  name="bloodGroup"
+                  value={formData.bloodGroup}
+                  onChange={handleInputChange}
+                  className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
+                >
                   <option value="">Select</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
@@ -226,7 +326,10 @@ const ProfileParent = () => {
 
         {/* Register Button */}
         <div className="mt-12 flex justify-center">
-          <button className="px-32 bg-indigo-600 text-white py-4 rounded-xl font-medium shadow-lg hover:bg-indigo-700 transition-all duration-200 transform hover:-translate-y-0.5">
+          <button
+            onClick={handleRegister}
+            className="px-32 bg-indigo-600 text-white py-4 rounded-xl font-medium shadow-lg hover:bg-indigo-700 transition-all duration-200 transform hover:-translate-y-0.5"
+          >
             Register
           </button>
         </div>
@@ -240,7 +343,7 @@ const ProfileParent = () => {
           </a>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

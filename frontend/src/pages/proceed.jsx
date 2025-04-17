@@ -28,187 +28,49 @@ const PageLayout = () => {
   };
 
   return (
-   
-    <div>
-    <div style={styles.container}>
-      <div style={styles.leftPart}>
-        <div style={styles.logoContainer}>
-          <img src="assets/InfantFuel logo-04.png" alt="Logo" style={styles.logo} />
+    <div className="flex w-screen h-screen">
+      <div className="flex-1 flex flex-col items-center justify-between p-5 bg-white">
+        <div className="mt-5">
+          <img className="h-52 object-contain" src="assets/InfantFuel logo-04.png" alt="Logo" />
         </div>
-        <div style={styles.imageContainer}>
-          <img src={getImageSrc()} alt="Center Image" style={styles.image} />
+        <div className="flex-1 flex justify-center items-center p-5 max-w-full">
+          <img className="h-72 w-72 object-cover" src={getImageSrc()} alt="Center Image" />
         </div>
-        <div style={styles.paragraphContainer}>
-        <p style={styles.paragraph}>
-          {selectedProfile === "Parents"
-            ? "Start your journey to track and support your baby’s growth with ease—because because every little step counts!"
-            : selectedProfile === "Healthcare Providers"
-            ? "Effortlessly track and monitor the growth of babiesin your care with a smart digital solution because  every milestone matters!"
-            : "Please select a profile type to proceed."}
-        </p>
+        <div className="mb-5 text-center">
+          <p className="text-base text-gray-800">
+            {selectedProfile === "Parents"
+              ? "Start your journey to track and support your baby’s growth with ease—because because every little step counts!"
+              : selectedProfile === "Healthcare Providers"
+              ? "Effortlessly track and monitor the growth of babiesin your care with a smart digital solution because  every milestone matters!"
+              : "Please select a profile type to proceed."}
+          </p>
         </div>
       </div>
-
-      <div style={styles.rightPart}>
-        <div style={styles.rightPartcontain}>
-        <h1 style={styles.heading}>Welcome!</h1>
-        <p style={styles.subHeading}>Please select your profile type</p>
-        <div style={styles.selectionContainer}>
-          <label style={styles.label}>
-            <input
-              type="radio"
-              name="profileType"
-              value="Parents"
-              onChange={handleSelection}
-              style={styles.radio}
-            />
-            Parents
-          </label>
-          <label style={styles.label}>
-            <input
-              type="radio"
-              name="profileType"
-              value="Healthcare Providers"
-              onChange={handleSelection}
-              style={styles.radio}
-            />
-            Healthcare Providers
-          </label>
-        </div>
-        <button style={styles.proceedButton} onClick={onProceed}>
-          Proceed
-        </button>
-        <p style={styles.loginText}>
-        If you already have an account
-        <p> You can 
-        <a href="/login" style={styles.loginLink}> Login here</a>  </p> 
-        </p>
+      <div className="flex-1 flex flex-col justify-center items-start bg-[#FFE7C7] p-5">
+        <div className="p-5 md:px-20">
+          <h1 className="text-4xl mb-2 text-indigo-500 font-bold">Welcome!</h1>
+          <p className="text-lg mb-5 text-gray-600">Please select your profile type</p>
+          <div className="mb-5">
+            <label className="block text-base mb-2 text-gray-800">
+              <input type="radio" className="mr-2" name="profileType" value="Parents" onChange={handleSelection} />
+              Parents
+            </label>
+            <label className="block text-base mb-2 text-gray-800">
+              <input type="radio" className="mr-2" name="profileType" value="Healthcare Providers" onChange={handleSelection} />
+              Healthcare Providers
+            </label>
+          </div>
+          <button className="px-24 py-2 text-base text-white bg-indigo-500 rounded-md cursor-pointer hover:bg-blue-800" onClick={onProceed}>
+            Proceed
+          </button>
+          <p className="mt-5 text-sm text-gray-600">
+            If you already have an account
+            <a href="/login" className="text-indigo-500 font-bold cursor-pointer no-underline"> Login here</a>
+          </p>
         </div>
       </div>
-      
-    
-      
     </div>
-    
-    </div>
-    
   );
-};
-
-const styles = {
-  loginText: {
-    marginTop: "20px",
-    fontSize: "14px",
-    color: "#666",
-    // textAlign: "center",
-  },
-  
-  loginLink: {
-    color: "#A020F0", // Purple color to match the button
-    textDecoration: "none",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-
-  container: {
-    display: "flex",
-    width: "100vw",
-    height: "100vh",
-  },
-  leftPart: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "20px",
-    backgroundColor: "#ffffff",
-  },
-  logoContainer: {
-    marginTop: "20px",
-  },
-  logo: {
-    height: "200px",
-    objectFit: "contain",
-  },
-  imageContainer: {
-    // flex: 1,
-    // display: "flex",
-    // justifyContent: "center",
-    // alignItems: "center",
-
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "20px",
-    maxWidth: "100%", 
-
-
-
-  },
-  image: {
-    height: "300px",
-    width: "300px",
-    objectFit: "cover",
-    // borderRadius: "50%",
-    // borderRadius: "20px", // Optional: softer edges
-    // boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Adds a modern shadow effect
-  
-  },
-  paragraphContainer: {
-    marginBottom: "20px",
-    textAlign: "center",
-  },
-  paragraph: {
-    fontSize: "16px",
-    color: "#333",
-  },
-  rightPart: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems:"left",
-    backgroundColor: "#FFE7C7", // Cream color
-    padding: "20px",
-    
-  },
-  rightPartcontain: {
-    padding: "20px 70px",
-  },
-  heading: {
-    fontSize: "32px",
-    marginBottom: "10px",
-    color: "#A020F0",
-    fontWeight: "bold",
-  },
-  subHeading: {
-    fontSize: "18px",
-    marginBottom: "20px",
-    color: "#666",
-  },
-  selectionContainer: {
-    marginBottom: "20px",
-  },
-  label: {
-    display: "block",
-    fontSize: "16px",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  radio: {
-    marginRight: "10px",
-  },
-  proceedButton: {
-    padding: "10px 100px",
-    fontSize: "16px",
-    color: "#fff",
-    backgroundColor: "#A020F0",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
 };
 
 export default PageLayout;

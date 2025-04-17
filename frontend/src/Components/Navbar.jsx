@@ -22,6 +22,10 @@ const Navbar = () => {
     const currentTab = tabs.find(tab => tab.path === location.pathname);
     if (currentTab) {
       setActiveTab(currentTab.name);
+    } else if (location.pathname === '/profile') {
+      setActiveTab("Profile"); // Handle Profile explicitly
+    } else if (location.pathname === '/notifications') {
+      setActiveTab("Notifications"); // Handle Notifications explicitly
     }
   }, [location.pathname, tabs]);
 
@@ -56,10 +60,10 @@ const Navbar = () => {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/login')} 
-            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-400 hover:text-white">
             LOGIN
           </button>
-          <button onClick={() => navigate('/signin')} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-300 hover:text-gray-900">
+          <button onClick={() => navigate('/signin')} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-orange-400 hover:text-white">
             SIGN UP
           </button>
           <button
@@ -68,7 +72,9 @@ const Navbar = () => {
                 ? "text-white bg-orange-400 rounded-md"
                 : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
             }`}
-            onClick={() => setActiveTab("Notifications")}
+            onClick={() => {
+              setActiveTab("Notifications"); // Set activeTab to "Notifications"
+            }}
           >
             <Bell className="h-5 w-5" />
           </button>
@@ -79,8 +85,8 @@ const Navbar = () => {
                 : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
             }`}
             onClick={() => {
-              setActiveTab("Profile");
-              navigate('/profile'); // 🔥 Navigate to Profile page
+              setActiveTab("Profile"); // Set activeTab to "Profile"
+              navigate('/profile'); // Navigate to Profile page
             }}
           >
             <User className="h-5 w-5" />
