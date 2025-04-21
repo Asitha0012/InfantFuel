@@ -24,6 +24,10 @@ const Navbar = () => {
       setActiveTab(currentTab.name);
     } else if (location.pathname === '/profile') {
       setActiveTab("Profile"); // Handle Profile explicitly
+    } else if (location.pathname === '/growth-tracking') {
+      setActiveTab("Tracker"); // Handle Profile explicitly
+    } else if (location.pathname === '/health-tracking') {
+      setActiveTab("Tracker"); // Handle Profile explicitly
     } else if (location.pathname === '/notifications') {
       setActiveTab("Notifications"); // Handle Notifications explicitly
     }
