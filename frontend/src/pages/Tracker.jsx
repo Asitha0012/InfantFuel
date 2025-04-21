@@ -59,21 +59,32 @@ const Tracker = () => {
           </Section>
 
           {/* Nutrition Tracking Section */}
-          <Section title="Nutrition Tracking" onClick={() => navigate('/nutrition-tracking')}>
+          <Section title="Nutrition Tracking">
             <div className="grid grid-cols-3 gap-4">
-              <TrackingCard icon={Baby} label="Breastfeeding" />
-              <TrackingCard icon={Droplet} label="Fluids" />
-              <TrackingCard icon={Grape} label="Solids" />
+            <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Syringe} label="Breastfeeding" />
+            </section>
+            <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Syringe} label="Fluids" />
+            </section>
+            <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Syringe} label="Solids" />
+            </section>
             </div>
           </Section>
 
           {/* Health Section */}
-          <Section title="Health" onClick={() => navigate('/health-tracking')}>
+          <Section title="Health">
             <div className="grid grid-cols-2 gap-4">
-              <TrackingCard icon={Syringe} label="Vaccination" />
-              <TrackingCard icon={Pill} label="Medication" />
+            <section title="vaccine" onClick={() => navigate('/health-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Syringe} label="Vaccination" />
+            </section>
+            <section title="medicine" onClick={() => navigate('/health-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Syringe} label="Medication" />
+            </section>
             </div>
           </Section>
+
 
           {/* Recent Activities Section */}
           <Section title="Recent Activities" onClick={() => navigate('/recent-activities')}>
