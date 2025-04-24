@@ -79,7 +79,7 @@ const Tracker = () => {
             <section title="vaccine" onClick={() => navigate('/health-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={Syringe} label="Vaccination" />
             </section>
-            <section title="medicine" onClick={() => navigate('/health-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+            <section title="medicine" onClick={() => navigate('/medication-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={Syringe} label="Medication" />
             </section>
             </div>

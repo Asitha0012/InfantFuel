@@ -14,6 +14,7 @@ import Profile from './pages/profile';
 import Notification from './pages/notification';
 import GrowthTracking from './pages/growthtracking';
 import Health from './pages/health';
+import Medication from './pages/medication';
 import Nutrition from './pages/nutrition';
 const App = () => {
   return (
@@ -35,6 +36,8 @@ const App = () => {
         <Route path="/growth-tracking" element={<GrowthTracking />} />
         <Route path="/health-tracking" element={<Health />} />
         <Route path="/nutrition-tracking" element={<Nutrition />} />
+        <Route path="/medication-tracking" element={<Medication />} />
+
 
        
        
