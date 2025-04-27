@@ -4,19 +4,72 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 import createToken from "../utils/createToken.js";
 
 const createUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+  const { userType, fullName, email, password, ...additionalFields } = req.body;
 
-  if (!username || !email || !password) {
-    throw new Error("Please fill all the fields");
+  if (!userType || !fullName || !email || !password) {
+    throw new Error("Please fill all the required fields");
   }
 
   const userExists = await User.findOne({ email });
-  if (userExists) res.status(400).send("User already exists");
+  if (userExists) {
+    return res.status(400).json({ message: "User already exists" });
+  }
 
   // Hash the user password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-  const newUser = new User({ username, email, password: hashedPassword });
+
+  let newUser;
+
+  if (userType === "parent") {
+    const { address, contactNumber, babyDetails } = additionalFields;
+
+    if (!address || !contactNumber || !babyDetails || !babyDetails.fullName || !babyDetails.dateOfBirth || !babyDetails.gender || !babyDetails.birthWeight) {
+      throw new Error("Please fill all the required fields for parent registration");
+    }
+
+    newUser = new User({
+      fullName,
+      email,
+      password: hashedPassword,
+      address,
+      contactNumber,
+      userType: "parent",
+      isAdmin: false,
+      babyDetails: {
+        fullName: babyDetails.fullName,
+        dateOfBirth: babyDetails.dateOfBirth,
+        gender: babyDetails.gender,
+        birthWeight: babyDetails.birthWeight,
+        birthHeight: babyDetails.birthHeight || null,
+        bloodGroup: babyDetails.bloodGroup || null,
+        profilePicture: babyDetails.profilePicture || null,
+      },
+    });
+  } else if (userType === "healthcareProvider") {
+    const { workplaceAddress, contactNumber, district, gramaNiladhariDivision, position, professionalRegistrationNumber, profilePicture } = additionalFields;
+
+    if (!workplaceAddress || !contactNumber || !district || !gramaNiladhariDivision || !position || !professionalRegistrationNumber) {
+      throw new Error("Please fill all the required fields for healthcare provider registration");
+    }
+
+    newUser = new User({
+      fullName,
+      email,
+      password: hashedPassword,
+      workplaceAddress,
+      district,
+      gramaNiladhariDivision,
+      contactNumber,
+      position,
+      professionalRegistrationNumber,
+      userType: "healthcareProvider",
+      isAdmin: true,
+      profilePicture: profilePicture || null,
+    });
+  } else {
+    throw new Error("Invalid user type");
+  }
 
   try {
     await newUser.save();
@@ -24,8 +77,9 @@ const createUser = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       _id: newUser._id,
-      username: newUser.username,
+      fullName: newUser.fullName,
       email: newUser.email,
+      userType: newUser.userType,
       isAdmin: newUser.isAdmin,
     });
   } catch (error) {
@@ -95,7 +149,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    user.username = req.body.username || user.username;
+    user.fullName = req.body.fullName || user.fullName;
     user.email = req.body.email || user.email;
 
     if (req.body.password) {
@@ -104,13 +158,40 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       user.password = hashedPassword;
     }
 
+    if (user.userType === "parent") {
+      user.contactNumber = req.body.contactNumber || user.contactNumber;
+      user.address = req.body.address || user.address;
+
+      if (user.babyDetails) {
+        user.babyDetails.fullName = req.body.babyDetails?.fullName || user.babyDetails.fullName;
+        user.babyDetails.dateOfBirth = req.body.babyDetails?.dateOfBirth || user.babyDetails.dateOfBirth;
+        user.babyDetails.gender = req.body.babyDetails?.gender || user.babyDetails.gender;
+        user.babyDetails.birthWeight = req.body.babyDetails?.birthWeight || user.babyDetails.birthWeight;
+        user.babyDetails.birthHeight = req.body.babyDetails?.birthHeight || user.babyDetails.birthHeight;
+        user.babyDetails.bloodGroup = req.body.babyDetails?.bloodGroup || user.babyDetails.bloodGroup;
+        user.babyDetails.profilePicture = req.body.babyDetails?.profilePicture || user.babyDetails.profilePicture;
+      }
+    } else if (user.userType === "healthcareProvider") {
+      user.contactNumber = req.body.contactNumber || user.contactNumber;
+      user.address = req.body.address || user.address;
+      user.profilePicture = req.body.profilePicture || user.profilePicture;
+      user.workplaceAddress = req.body.workplaceAddress || user.workplaceAddress;
+    }
+
     const updatedUser = await user.save();
 
     res.json({
       _id: updatedUser._id,
-      username: updatedUser.username,
+      fullName: updatedUser.fullName,
       email: updatedUser.email,
+      userType: updatedUser.userType,
       isAdmin: updatedUser.isAdmin,
+      contactNumber: updatedUser.contactNumber,
+      address: updatedUser.address,
+      profilePicture: updatedUser.profilePicture,
+      ...(updatedUser.userType === "parent" && {
+        babyDetails: updatedUser.babyDetails,
+      }),
     });
   } else {
     res.status(404);
