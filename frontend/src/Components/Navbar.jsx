@@ -32,6 +32,10 @@ const Navbar = () => {
       setActiveTab("Tracker"); // Handle Profile explicitly
     } else if (location.pathname === '/medication-tracking') {
       setActiveTab("Tracker"); // Handle Profile explicitly
+    } else if (location.pathname === '/nutrisolid-tracking') {
+      setActiveTab("Tracker"); // Handle Profile explicitly
+    } else if (location.pathname === '/nutrifluid-tracking') {
+      setActiveTab("Tracker"); // Handle Profile explicitly
     } else if (location.pathname === '/notifications') {
       setActiveTab("Notifications"); // Handle Notifications explicitly
     }
