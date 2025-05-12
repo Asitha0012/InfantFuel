@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
+import { useProfileMutation } from "../redux/api/users"; // Import the mutation hook
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const Profile = () => {
+  const { userInfo } = useSelector((state) => state.auth); // Get logged-in user info from Redux
+  const [updateProfile] = useProfileMutation(); // Mutation for updating profile
+
   const initialUser = {
     name: "",
     email: "",
@@ -18,6 +24,28 @@ const Profile = () => {
   const [previewAvatar, setPreviewAvatar] = useState("");
   const [changePassword, setChangePassword] = useState(false);
   const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
+
+  // Fetch user details on component mount
+  useEffect(() => {
+    if (userInfo) {
+      setUser({
+        name: userInfo.fullName,
+        email: userInfo.email,
+        phone: userInfo.contactNumber || "",
+        address: userInfo.address || "",
+        birthdate: userInfo.babyDetails?.dateOfBirth || "",
+        avatar: userInfo.profilePicture || "",
+      });
+      setEditedUser({
+        name: userInfo.fullName,
+        email: userInfo.email,
+        phone: userInfo.contactNumber || "",
+        address: userInfo.address || "",
+        birthdate: userInfo.babyDetails?.dateOfBirth || "",
+        avatar: userInfo.profilePicture || "",
+      });
+    }
+  }, [userInfo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,17 +69,38 @@ const Profile = () => {
     setPasswords((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (changePassword && passwords.new !== passwords.confirm) {
-      alert("New passwords do not match!");
+      toast.error("New passwords do not match!");
       return;
     }
 
-    console.log("Updated Password:", passwords);
-    setUser(editedUser);
-    setEditMode(false);
-    setChangePassword(false);
-    setPasswords({ current: "", new: "", confirm: "" });
+    try {
+      const updatedData = {
+        fullName: editedUser.name,
+        email: editedUser.email,
+        contactNumber: editedUser.phone,
+        address: editedUser.address,
+        babyDetails: {
+          dateOfBirth: editedUser.birthdate,
+        },
+        profilePicture: editedUser.avatar,
+      };
+
+      if (changePassword) {
+        updatedData.password = passwords.new;
+      }
+
+      // Use the mutation to update the profile
+      await updateProfile(updatedData).unwrap();
+      toast.success("Profile updated successfully!");
+      setUser(editedUser);
+      setEditMode(false);
+      setChangePassword(false);
+      setPasswords({ current: "", new: "", confirm: "" });
+    } catch (error) {
+      toast.error(error.data?.message || "Failed to update profile");
+    }
   };
 
   const handleCancel = () => {

@@ -136,8 +136,13 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     res.json({
       _id: user._id,
-      username: user.username,
+      fullName: user.fullName,
       email: user.email,
+      contactNumber: user.contactNumber,
+      address: user.address,
+      babyDetails: user.babyDetails, // Include baby details for parents
+      profilePicture: user.profilePicture, // Include profile picture
+      userType: user.userType, // Include user type (e.g., parent or healthcare provider)
     });
   } else {
     res.status(404);

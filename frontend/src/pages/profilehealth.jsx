@@ -2,6 +2,10 @@ import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
+import Loader from "../Components/Loader";
+import { useRegisterMutation } from "../redux/api/users";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Profilehealth = () => {
   const [formData, setFormData] = useState({
@@ -17,9 +21,12 @@ const Profilehealth = () => {
     registrationNumber: "",
   });
 
-  const [errors, setErrors] = useState({}); // To store validation messages
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [register, { isLoading }] = useRegisterMutation();
+  const navigate = useNavigate();
 
   const districts = [
     "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara",
@@ -33,10 +40,10 @@ const Profilehealth = () => {
     setErrors({ ...errors, [name]: "" }); // Clear error message when user starts typing
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const newErrors = {};
 
-    // Validate each required field
+    // Validate required fields
     if (!formData.fullName) newErrors.fullName = "Full name is required.";
     if (!formData.workplaceAddress) newErrors.workplaceAddress = "Workplace address is required.";
     if (!formData.district) newErrors.district = "Please select a district.";
@@ -53,8 +60,25 @@ const Profilehealth = () => {
 
     // If no errors, proceed with form submission
     if (Object.keys(newErrors).length === 0) {
-      console.log("Form submitted successfully:", formData);
-      // Add your form submission logic here
+      try {
+        await register({
+          userType: "healthcareProvider",
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          workplaceAddress: formData.workplaceAddress,
+          district: formData.district,
+          gramaDivision: formData.gramaDivision,
+          contactNumber: formData.contactNumber,
+          position: formData.position,
+          professionalRegistrationNumber: formData.registrationNumber,
+        }).unwrap();
+
+        toast.success("Registration successful!");
+        navigate("/login");
+      } catch (error) {
+        toast.error(error.data?.message || "Registration failed!");
+      }
     }
   };
 
@@ -73,6 +97,7 @@ const Profilehealth = () => {
               Healthcare Provider Details
             </h2>
             <div className="space-y-6">
+              {/* Form fields for personal details */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full name <span className="text-rose-500">*</span>
@@ -256,28 +281,22 @@ const Profilehealth = () => {
                 />
                 {errors.registrationNumber && <p className="text-sm text-red-500 mt-1">{errors.registrationNumber}</p>}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Add a profile picture
-                </label>
-                <input
-                  type="file"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                />
-              </div>
             </div>
           </div>
         </div>
 
         {/* Register Button */}
         <div className="mt-12 flex justify-center">
-          <button
-            onClick={handleRegister}
-            className="px-32 bg-indigo-600 text-white py-4 rounded-xl font-medium shadow-lg hover:bg-indigo-700 transition-all duration-200 transform hover:-translate-y-0.5"
-          >
-            Register
-          </button>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <button
+              onClick={handleRegister}
+              className="px-32 bg-indigo-600 text-white py-4 rounded-xl font-medium shadow-lg hover:bg-indigo-700 transition-all duration-200 transform hover:-translate-y-0.5"
+            >
+              Register
+            </button>
+          )}
         </div>
         <div className="text-center mt-6">
           <span className="text-gray-600">If you already have an account</span>
