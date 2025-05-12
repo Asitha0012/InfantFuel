@@ -18,7 +18,8 @@ import GrowthTracking from './pages/growthtracking';
 import Health from './pages/health';
 import Medication from './pages/medication';
 import Nutrition from './pages/nutrition';
-
+import Nutrifluid from './pages/nutrifluid';
+import Nutrisolid from './pages/nutrisolid';
 
 const App = () => {
   return (
@@ -41,8 +42,14 @@ const App = () => {
         <Route path="/health-tracking" element={<Health />} />
         <Route path="/nutrition-tracking" element={<Nutrition />} />
         <Route path="/medication-tracking" element={<Medication />} />
+
         <Route path="/register/parent" element={<ProfileParent />} />
         <Route path="/register/healthcare" element={<Profilehealth />} />
+
+        <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
+        <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
+   
+
       </Routes>
     </Router>
   );

@@ -4,6 +4,10 @@ import Navbar from '../Components/Navbar'
 import Footer from '../Components/Footer'
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 import { 
   Scale,
@@ -62,13 +66,13 @@ const Tracker = () => {
           <Section title="Nutrition Tracking">
             <div className="grid grid-cols-3 gap-4">
             <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
-                <TrackingCard icon={Syringe} label="Breastfeeding" />
+                <TrackingCard icon={Baby} label="Breastfeeding" />
             </section>
-            <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
-                <TrackingCard icon={Syringe} label="Fluids" />
+            <section title="vaccine" onClick={() => navigate('/nutrifluid-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Droplet} label="Fluids" />
             </section>
-            <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
-                <TrackingCard icon={Syringe} label="Solids" />
+            <section title="vaccine" onClick={() => navigate('/nutrisolid-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Grape} label="Solids" />
             </section>
             </div>
           </Section>
@@ -80,7 +84,7 @@ const Tracker = () => {
                 <TrackingCard icon={Syringe} label="Vaccination" />
             </section>
             <section title="medicine" onClick={() => navigate('/medication-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
-                <TrackingCard icon={Syringe} label="Medication" />
+                <TrackingCard icon={Pill} label="Medication" />
             </section>
             </div>
           </Section>
@@ -113,12 +117,22 @@ const Tracker = () => {
 
         {/* Upcoming Section */}
         <Section title="Upcoming" onClick={() => console.log('Upcoming clicked')}>
-          <div className="bg-white rounded-lg p-4 flex justify-center">
-            <div className="w-full max-w-md">
-              <Calendar />
-            </div>
-          </div>
-        </Section>
+  <div className="bg-white rounded-lg p-4 flex justify-center">
+    <div className="w-full max-w-4xl">
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        selectable={true}
+        editable={true}
+        events={[
+          { title: 'Vaccination', date: '2025-05-02' },
+          { title: 'Growth Check', date: '2025-05-05' }
+        ]}
+        dateClick={(info) => alert(`Clicked on: ${info.dateStr}`)}
+      />
+    </div>
+  </div>
+</Section>
 
       </div>
       <Footer />

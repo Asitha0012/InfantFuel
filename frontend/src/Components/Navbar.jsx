@@ -33,6 +33,7 @@ const Navbar = () => {
       setActiveTab("Profile");
     } else if (location.pathname === "/notifications") {
       setActiveTab("Notifications");
+
     }
   }, [location.pathname, tabs]);
 
