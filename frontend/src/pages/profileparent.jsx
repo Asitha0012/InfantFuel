@@ -2,6 +2,10 @@ import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
+import Loader from "../Components/Loader";
+import { useRegisterMutation } from "../redux/api/users";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ProfileParent = () => {
   const [formData, setFormData] = useState({
@@ -24,13 +28,16 @@ const ProfileParent = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [register, { isLoading }] = useRegisterMutation();
+  const navigate = useNavigate();
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setErrors({ ...errors, [name]: "" }); // Clear error message when user starts typing
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const newErrors = {};
 
     // Validate required fields
@@ -50,8 +57,30 @@ const ProfileParent = () => {
 
     // If no errors, proceed with form submission
     if (Object.keys(newErrors).length === 0) {
-      console.log("Form submitted successfully:", formData);
-      // Add your form submission logic here
+      try {
+        const birthWeight = `${formData.birthWeightKg}kg ${formData.birthWeightG}g`;
+        await register({
+          userType: "parent",
+          fullName: formData.parentFullName,
+          email: formData.email,
+          password: formData.password,
+          address: formData.address,
+          contactNumber: formData.contactNumber,
+          babyDetails: {
+            fullName: formData.babyFullName,
+            dateOfBirth: formData.dateOfBirth,
+            gender: formData.gender,
+            birthWeight,
+            birthHeight: formData.height,
+            bloodGroup: formData.bloodGroup,
+          },
+        }).unwrap();
+
+        toast.success("Registration successful!");
+        navigate("/login");
+      } catch (error) {
+        toast.error(error.data?.message || "Registration failed!");
+      }
     }
   };
 
@@ -326,12 +355,16 @@ const ProfileParent = () => {
 
         {/* Register Button */}
         <div className="mt-12 flex justify-center">
-          <button
-            onClick={handleRegister}
-            className="px-32 bg-indigo-600 text-white py-4 rounded-xl font-medium shadow-lg hover:bg-indigo-700 transition-all duration-200 transform hover:-translate-y-0.5"
-          >
-            Register
-          </button>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <button
+              onClick={handleRegister}
+              className="px-32 bg-indigo-600 text-white py-4 rounded-xl font-medium shadow-lg hover:bg-indigo-700 transition-all duration-200 transform hover:-translate-y-0.5"
+            >
+              Register
+            </button>
+          )}
         </div>
         <div className="text-center mt-6">
           <span className="text-gray-600">If you already have an account</span>

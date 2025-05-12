@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import asyncHandler from "./asyncHandler.js";
 
-// Check if the user is authenticated or not
+// Middleware to authenticate the user
 const authenticate = asyncHandler(async (req, res, next) => {
   let token;
 
@@ -11,8 +11,17 @@ const authenticate = asyncHandler(async (req, res, next) => {
 
   if (token) {
     try {
+      // Verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Attach the user to req.user (excluding the password)
       req.user = await User.findById(decoded.userId).select("-password");
+
+      if (!req.user) {
+        res.status(404);
+        throw new Error("User not found.");
+      }
+
       next();
     } catch (error) {
       res.status(401);
@@ -20,16 +29,17 @@ const authenticate = asyncHandler(async (req, res, next) => {
     }
   } else {
     res.status(401);
-    throw new Error("Not authorized, no token");
+    throw new Error("Not authorized, no token provided.");
   }
 });
 
-// Check if the user is admin or not
+// Middleware to authorize admin users
 const authorizeAdmin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    res.status(401).send("Not authorized as an admin");
+    res.status(403); // Forbidden
+    throw new Error("Not authorized as an admin.");
   }
 };
 
