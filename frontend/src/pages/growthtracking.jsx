@@ -184,6 +184,11 @@ const GrowthTracking = () => {
                 Height Growth Chart
               </h2>
               <Line data={heightChartData} />
+
+              <h2 className="text-xl font-semibold mt-8 mb-4 text-center">
+                Height 
+              </h2>
+              <Line data={heightChartData} />
             </div>
           )}
         </div>
