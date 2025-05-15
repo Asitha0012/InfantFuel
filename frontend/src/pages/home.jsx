@@ -6,7 +6,7 @@ import growth from '../assets/growth.png';
 import nutrition from '../assets/nutrition.png';
 import babyreport from '../assets/babyreport.png';
 import babydoc from '../assets/babydoc.png';
-import Footer from '../Components/Footer';
+
 
 const Home = () => {
   return (
@@ -175,7 +175,6 @@ const Home = () => {
 
 
       </section>
-      <Footer/>
     </div>
   );
 };

@@ -47,9 +47,24 @@ const createUser = asyncHandler(async (req, res) => {
       },
     });
   } else if (userType === "healthcareProvider") {
-    const { workplaceAddress, contactNumber, district, gramaNiladhariDivision, position, professionalRegistrationNumber, profilePicture } = additionalFields;
+    const {
+      workplaceAddress,
+      contactNumber,
+      district,
+      gramaNiladhariDivision,
+      position,
+      professionalRegistrationNumber,
+      profilePicture,
+    } = additionalFields;
 
-    if (!workplaceAddress || !contactNumber || !district || !gramaNiladhariDivision || !position || !professionalRegistrationNumber) {
+    if (
+      !workplaceAddress ||
+      !contactNumber ||
+      !district ||
+      !gramaNiladhariDivision ||
+      !position ||
+      !professionalRegistrationNumber
+    ) {
       throw new Error("Please fill all the required fields for healthcare provider registration");
     }
 
@@ -140,9 +155,12 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       email: user.email,
       contactNumber: user.contactNumber,
       address: user.address,
-      babyDetails: user.babyDetails, // Include baby details for parents
-      profilePicture: user.profilePicture, // Include profile picture
-      userType: user.userType, // Include user type (e.g., parent or healthcare provider)
+      babyDetails: user.babyDetails, // For parents
+      profilePicture: user.profilePicture,
+      userType: user.userType,
+      workplaceAddress: user.workplaceAddress, // ADD THIS
+      position: user.position,                 // ADD THIS
+      professionalRegistrationNumber: user.professionalRegistrationNumber, // ADD THIS
     });
   } else {
     res.status(404);
@@ -181,6 +199,8 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       user.address = req.body.address || user.address;
       user.profilePicture = req.body.profilePicture || user.profilePicture;
       user.workplaceAddress = req.body.workplaceAddress || user.workplaceAddress;
+      user.position = req.body.position || user.position; // ADD THIS
+      user.professionalRegistrationNumber = req.body.professionalRegistrationNumber || user.professionalRegistrationNumber; // ADD THIS
     }
 
     const updatedUser = await user.save();
@@ -194,6 +214,9 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       contactNumber: updatedUser.contactNumber,
       address: updatedUser.address,
       profilePicture: updatedUser.profilePicture,
+      workplaceAddress: updatedUser.workplaceAddress, // ADD THIS
+      position: updatedUser.position,                 // ADD THIS
+      professionalRegistrationNumber: updatedUser.professionalRegistrationNumber, // ADD THIS
       ...(updatedUser.userType === "parent" && {
         babyDetails: updatedUser.babyDetails,
       }),
