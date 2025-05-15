@@ -61,45 +61,41 @@ const userSchema = mongoose.Schema(
       },
     },
 
-    workplaceAddress: {
-      type: String,
-      required: function () {
-        return this.userType === "healthcareProvider";
-      },
-    },
+workplaceAddress: {
+  type: String,
+  required: function () {
+    return this.userType === "healthcareProvider";
+  },
+},
+district: {
+  type: String,
+  required: function () {
+    return this.userType === "healthcareProvider";
+  },
+},
+gramaNiladhariDivision: {
+  type: String,
+  required: function () {
+    return this.userType === "healthcareProvider";
+  },
+},
+position: {
+  type: String,
+  required: function () {
+    return this.userType === "healthcareProvider";
+  },
+},
+professionalRegistrationNumber: {
+  type: String,
+  required: function () {
+    return this.userType === "healthcareProvider";
+  },
+},
+profilePicture: {
+  type: String,
+  default: null,
+},
 
-    district: {
-      type: String,
-      required: function () {
-        return this.userType === "healthcareProvider";
-      },
-    },
-
-    gramaNiladhariDivision: {
-      type: String,
-      required: function () {
-        return this.userType === "healthcareProvider";
-      },
-    },
-
-    position: {
-      type: String,
-      required: function () {
-        return this.userType === "healthcareProvider";
-      },
-    },
-
-    professionalRegistrationNumber: {
-      type: String,
-      required: function () {
-        return this.userType === "healthcareProvider";
-      },
-    },
-
-    profilePicture: {
-      type: String,
-      default: null,
-    },
   },
   { timestamps: true }
 );

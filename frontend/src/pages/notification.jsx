@@ -1,4 +1,3 @@
-import React from "react";
 import { Bell } from "lucide-react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";

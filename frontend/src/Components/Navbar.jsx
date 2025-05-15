@@ -4,14 +4,17 @@ import logo from "../assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/features/auth/authSlice";
+import { apiSlice } from "../redux/api/apiSlice";
+import { useLogoutMutation } from "../redux/api/users";
 
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
-  const [showDropdown, setShowDropdown] = useState(false); // State to toggle dropdown
-  const { userInfo } = useSelector((state) => state.auth); // Get logged-in user info
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const [logoutApi] = useLogoutMutation();
 
   const tabs = useMemo(
     () => [
@@ -33,7 +36,6 @@ const Navbar = () => {
       setActiveTab("Profile");
     } else if (location.pathname === "/notifications") {
       setActiveTab("Notifications");
-
     }
   }, [location.pathname, tabs]);
 
@@ -42,13 +44,21 @@ const Navbar = () => {
     navigate(tab.path);
   };
 
-  const handleLogout = () => {
-    dispatch(logout()); // Clear user info from Redux and localStorage
-    navigate("/"); // Redirect to home page
+  const handleLogout = async () => {
+    const confirmed = window.confirm("Are you sure you want to log out?");
+    if (!confirmed) return;
+    try {
+      await logoutApi().unwrap();
+    } catch {
+      // Optionally handle error
+    }
+    dispatch(logout());
+    dispatch(apiSlice.util.resetApiState());
+    navigate("/");
   };
 
   const handleProfileClick = () => {
-    navigate("/profile"); // Navigate to profile page
+    navigate("/profile");
   };
 
   return (
