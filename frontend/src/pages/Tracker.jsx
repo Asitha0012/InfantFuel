@@ -1,8 +1,7 @@
-import React from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Components/Navbar'
 import Footer from '../Components/Footer'
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -20,8 +19,72 @@ import {
   Pill,
 } from 'lucide-react';
 
+import {
+  useGetEventsQuery,
+  useCreateEventMutation,
+  useUpdateEventMutation,
+  useDeleteEventMutation,
+} from '../redux/api/events';
+import { useSelector } from "react-redux";
+import Modal from "../Components/Modal";
+import PropTypes from "prop-types";
+
+const Section = ({ title, children, onClick }) => (
+  <div 
+    className="bg-purple-50 p-6 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors"
+    onClick={onClick}
+  >
+    <h2 className="text-xl font-semibold mb-4">{title}</h2>
+    {children}
+  </div>
+);
+
+Section.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node,
+  onClick: PropTypes.func,
+};
+
+const TrackingCard = ({ icon: Icon, label }) => (
+  <div className="bg-white p-4 rounded-lg flex flex-col items-center gap-2">
+    <Icon className="w-8 h-8 text-purple-500" />
+    <span className="text-sm text-center">{label}</span>
+  </div>
+);
+
+TrackingCard.propTypes = {
+  icon: PropTypes.elementType.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+function renderEventContent(eventInfo) {
+  return (
+    <span>
+      <span style={{
+        display: "inline-block",
+        width: 8,
+        height: 8,
+        borderRadius: "50%",
+        background: "red",
+        marginRight: 6,
+        verticalAlign: "middle"
+      }}></span>
+      {eventInfo.event.title}
+    </span>
+  );
+}
+
 const Tracker = () => {
   const navigate = useNavigate();
+  const { userInfo } = useSelector((state) => state.auth);
+  const { data: events = [], refetch } = useGetEventsQuery();
+  const [createEvent] = useCreateEventMutation();
+  const [updateEvent] = useUpdateEventMutation();
+  const [deleteEvent] = useDeleteEventMutation();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null);
+  const [viewMode, setViewMode] = useState(false);
 
   const recentActivities = [
     { activity: 'Weight', date: '09/12/2024 at 10.30am', updatedBy: 'Midwife' },
@@ -30,22 +93,54 @@ const Tracker = () => {
     { activity: 'Breastfeed', date: '08/12/2024 at 10:00am', updatedBy: 'Parent' },
   ];
 
-  const Section = ({ title, children, onClick }) => (
-    <div 
-      className="bg-purple-50 p-6 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors"
-      onClick={onClick}
-    >
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
-      {children}
-    </div>
-  );
+  // Group events by date for FullCalendar (multiple events per day)
+  const calendarEvents = events.map((e) => ({
+    id: e._id,
+    title: e.title,
+    date: e.date,
+  }));
 
-  const TrackingCard = ({ icon: Icon, label }) => (
-    <div className="bg-white p-4 rounded-lg flex flex-col items-center gap-2">
-      <Icon className="w-8 h-8 text-purple-500" />
-      <span className="text-sm text-center">{label}</span>
-    </div>
-  );
+  // Handle event click (view or edit)
+  const handleEventClick = (info) => {
+    const event = events.find((e) => e._id === info.event.id);
+    setModalData(event);
+    setViewMode(
+      !userInfo.isAdmin || event.createdBy.userId !== userInfo._id
+    );
+    setModalOpen(true);
+  };
+
+  // Handle date click (add event) - only for admins
+  const handleDateClick = (info) => {
+    setModalData({
+      date: info.dateStr,
+      title: "",
+      place: "",
+      details: "",
+    });
+    setViewMode(false);
+    setModalOpen(true);
+  };
+
+  // Save (create or update)
+  const handleSave = async (data) => {
+    if (modalData._id) {
+      await updateEvent({ id: modalData._id, ...data });
+    } else {
+      await createEvent(data);
+    }
+    setModalOpen(false);
+    refetch();
+  };
+
+  // Delete event
+  const handleDelete = async () => {
+    if (modalData && modalData._id) {
+      await deleteEvent(modalData._id);
+      setModalOpen(false);
+      refetch();
+    }
+  };
 
   return (
     <>
@@ -89,7 +184,6 @@ const Tracker = () => {
             </div>
           </Section>
 
-
           {/* Recent Activities Section */}
           <Section title="Recent Activities" onClick={() => navigate('/recent-activities')}>
             <div className="bg-white rounded-lg p-4">
@@ -116,26 +210,48 @@ const Tracker = () => {
         </div>
 
         {/* Upcoming Section */}
-        <Section title="Upcoming" onClick={() => console.log('Upcoming clicked')}>
-  <div className="bg-white rounded-lg p-4 flex justify-center">
-    <div className="w-full max-w-4xl">
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        selectable={true}
-        editable={true}
-        events={[
-          { title: 'Vaccination', date: '2025-05-02' },
-          { title: 'Growth Check', date: '2025-05-05' }
-        ]}
-        dateClick={(info) => alert(`Clicked on: ${info.dateStr}`)}
-      />
-    </div>
-  </div>
-</Section>
-
+       <Section
+        title={
+          <span className="text-indigo-700 font-semibold">
+            {userInfo.isAdmin
+             ? "Upcoming (set events by clicking on dates and notify parents)"
+             : "Upcoming"}
+             </span>
+              }
+              >
+          <div className="bg-white rounded-lg p-4 flex justify-center">
+            <div className="w-full max-w-4xl">
+              <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                selectable={userInfo.isAdmin}
+                editable={false}
+                events={calendarEvents}
+                dateClick={userInfo.isAdmin ? handleDateClick : undefined}
+                eventClick={handleEventClick}
+                eventContent={renderEventContent}
+              />
+            </div>
+          </div>
+        </Section>
       </div>
       <Footer />
+      {/* Modal for add/edit/view event */}
+      {modalOpen && (
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          data={modalData}
+          onSave={handleSave}
+          onDelete={
+            modalData && modalData._id && !viewMode
+              ? handleDelete
+              : undefined
+          }
+          viewMode={viewMode}
+          userInfo={userInfo}
+        />
+      )}
     </>
   );
 };
