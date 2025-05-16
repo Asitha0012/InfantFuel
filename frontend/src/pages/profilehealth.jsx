@@ -12,13 +12,15 @@ const Profilehealth = () => {
     fullName: "",
     workplaceAddress: "",
     district: "",
-    gramaDivision: "",
+    gramaNiladhariDivision: "",
     contactNumber: "",
     email: "",
     password: "",
     confirmPassword: "",
     position: "",
-    registrationNumber: "",
+    professionalRegistrationNumber: "",
+    profilePicture: "", // preview URL
+    profilePictureFile: null, // file for upload
   });
 
   const [errors, setErrors] = useState({});
@@ -35,32 +37,54 @@ const Profilehealth = () => {
   ];
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: "" }); // Clear error message when user starts typing
+    const { name, value, files } = e.target;
+    if (name === "profilePicture" && files && files[0]) {
+      setFormData((prev) => ({
+        ...prev,
+        profilePictureFile: files[0],
+        profilePicture: URL.createObjectURL(files[0]), // For preview
+      }));
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrors({ ...errors, [name]: "" });
+    }
+  };
+
+  // Upload image and return URL
+  const uploadProfilePicture = async (file) => {
+    const data = new FormData();
+    data.append("image", file);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: data,
+    });
+    if (!res.ok) throw new Error("Image upload failed");
+    const result = await res.json();
+    return result.url;
   };
 
   const handleRegister = async () => {
     const newErrors = {};
-
-    // Validate required fields
-    if (!formData.fullName) newErrors.fullName = "Full name is required.";
-    if (!formData.workplaceAddress) newErrors.workplaceAddress = "Workplace address is required.";
-    if (!formData.district) newErrors.district = "Please select a district.";
-    if (!formData.gramaDivision) newErrors.gramaDivision = "Grama Niladhari Division is required.";
-    if (!formData.contactNumber) newErrors.contactNumber = "Contact number is required.";
-    if (!formData.email) newErrors.email = "Email is required.";
+    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required.";
+    if (!formData.workplaceAddress.trim()) newErrors.workplaceAddress = "Workplace address is required.";
+    if (!formData.district.trim()) newErrors.district = "Please select a district.";
+    if (!formData.gramaNiladhariDivision.trim()) newErrors.gramaNiladhariDivision = "Grama Niladhari Division is required.";
+    if (!formData.contactNumber.trim()) newErrors.contactNumber = "Contact number is required.";
+    if (!formData.email.trim()) newErrors.email = "Email is required.";
     if (!formData.password) newErrors.password = "Password is required.";
     if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password.";
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
-    if (!formData.position) newErrors.position = "Position/Designation is required.";
-    if (!formData.registrationNumber) newErrors.registrationNumber = "Professional Registration Number is required.";
+    if (!formData.position.trim()) newErrors.position = "Position/Designation is required.";
+    if (!formData.professionalRegistrationNumber.trim()) newErrors.professionalRegistrationNumber = "Professional Registration Number is required.";
 
     setErrors(newErrors);
 
-    // If no errors, proceed with form submission
     if (Object.keys(newErrors).length === 0) {
       try {
+        let profilePictureUrl = "";
+        if (formData.profilePictureFile) {
+          profilePictureUrl = await uploadProfilePicture(formData.profilePictureFile);
+        }
         await register({
           userType: "healthcareProvider",
           fullName: formData.fullName,
@@ -68,16 +92,17 @@ const Profilehealth = () => {
           password: formData.password,
           workplaceAddress: formData.workplaceAddress,
           district: formData.district,
-          gramaDivision: formData.gramaDivision,
+          gramaNiladhariDivision: formData.gramaNiladhariDivision,
           contactNumber: formData.contactNumber,
           position: formData.position,
-          professionalRegistrationNumber: formData.registrationNumber,
+          professionalRegistrationNumber: formData.professionalRegistrationNumber,
+          profilePicture: profilePictureUrl, // Send the uploaded image URL or empty string
         }).unwrap();
 
         toast.success("Registration successful!");
         navigate("/login");
       } catch (error) {
-        toast.error(error.data?.message || "Registration failed!");
+        toast.error(error.data?.message || error.message || "Registration failed!");
       }
     }
   };
@@ -97,7 +122,6 @@ const Profilehealth = () => {
               Healthcare Provider Details
             </h2>
             <div className="space-y-6">
-              {/* Form fields for personal details */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full name <span className="text-rose-500">*</span>
@@ -112,7 +136,6 @@ const Profilehealth = () => {
                 />
                 {errors.fullName && <p className="text-sm text-red-500 mt-1">{errors.fullName}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Workplace Address <span className="text-rose-500">*</span>
@@ -127,7 +150,6 @@ const Profilehealth = () => {
                 />
                 {errors.workplaceAddress && <p className="text-sm text-red-500 mt-1">{errors.workplaceAddress}</p>}
               </div>
-
               <div className="flex space-x-4">
                 <div className="w-1/2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -152,16 +174,15 @@ const Profilehealth = () => {
                   </label>
                   <input
                     type="text"
-                    name="gramaDivision"
-                    value={formData.gramaDivision}
+                    name="gramaNiladhariDivision"
+                    value={formData.gramaNiladhariDivision}
                     onChange={handleInputChange}
                     placeholder="Grama Niladhari Division"
                     className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                   />
-                  {errors.gramaDivision && <p className="text-sm text-red-500 mt-1">{errors.gramaDivision}</p>}
+                  {errors.gramaNiladhariDivision && <p className="text-sm text-red-500 mt-1">{errors.gramaNiladhariDivision}</p>}
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact number <span className="text-rose-500">*</span>
@@ -176,7 +197,6 @@ const Profilehealth = () => {
                 />
                 {errors.contactNumber && <p className="text-sm text-red-500 mt-1">{errors.contactNumber}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email <span className="text-rose-500">*</span>
@@ -191,7 +211,6 @@ const Profilehealth = () => {
                 />
                 {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password <span className="text-rose-500">*</span>
@@ -217,7 +236,6 @@ const Profilehealth = () => {
                 </div>
                 {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirm password <span className="text-rose-500">*</span>
@@ -266,20 +284,39 @@ const Profilehealth = () => {
                 />
                 {errors.position && <p className="text-sm text-red-500 mt-1">{errors.position}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Professional Registration Number <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
-                  name="registrationNumber"
-                  value={formData.registrationNumber}
+                  name="professionalRegistrationNumber"
+                  value={formData.professionalRegistrationNumber}
                   onChange={handleInputChange}
                   placeholder="Professional Registration Number"
                   className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none"
                 />
-                {errors.registrationNumber && <p className="text-sm text-red-500 mt-1">{errors.registrationNumber}</p>}
+                {errors.professionalRegistrationNumber && <p className="text-sm text-red-500 mt-1">{errors.professionalRegistrationNumber}</p>}
+              </div>
+              {/* Profile Picture (Optional) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Picture <span className="text-gray-400">(Optional)</span>
+                </label>
+                <input
+                  type="file"
+                  name="profilePicture"
+                  accept="image/*"
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-lg border border-gray-200"
+                />
+                {formData.profilePicture && (
+                  <img
+                    src={formData.profilePicture}
+                    alt="Profile Preview"
+                    className="mt-2 w-24 h-24 object-cover rounded-full border"
+                  />
+                )}
               </div>
             </div>
           </div>

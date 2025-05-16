@@ -46,6 +46,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getProfile: builder.query({
+    query: () => ({
+    url: `${USERS_URL}/profile`,
+    method: "GET",
+   }),
+  }),
+
     getHealthcareProviders: builder.query({
       query: () => ({
         url: `${USERS_URL}?userType=healthcareProvider`,
@@ -69,6 +76,7 @@ export const {
   useProfileMutation,
   useGetUsersQuery,
   useGetParentsQuery,
+  useGetProfileQuery,
   useGetHealthcareProvidersQuery,
   useUploadProfilePictureMutation,
 } = userApiSlice;
