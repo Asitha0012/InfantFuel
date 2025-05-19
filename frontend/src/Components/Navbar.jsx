@@ -10,6 +10,8 @@ import { useLogoutMutation } from "../redux/api/users";
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,7 +23,7 @@ const Navbar = () => {
       { name: "Home", path: "/" },
       { name: "Tracker", path: "/tracker" },
       { name: "About", path: "/about" },
-      { name: "Support", path: "/Support" },
+      { name: "Network", path: "/Network" },
       { name: "Terms & Condition", path: "/termsandconditions" },
       { name: "Contact us", path: "/contact" },
     ],
@@ -40,13 +42,20 @@ const Navbar = () => {
   }, [location.pathname, tabs]);
 
   const handleTabClick = (tab) => {
+    // If unauthenticated and tab is Tracker or Network, show auth prompt
+    if (
+      !userInfo &&
+      (tab.name === "Tracker" || tab.name === "Network")
+    ) {
+      setShowAuthPrompt(true);
+      return;
+    }
     setActiveTab(tab.name);
     navigate(tab.path);
   };
 
   const handleLogout = async () => {
-    const confirmed = window.confirm("Are you sure you want to log out?");
-    if (!confirmed) return;
+    setShowLogoutModal(false);
     try {
       await logoutApi().unwrap();
     } catch {
@@ -138,7 +147,7 @@ const Navbar = () => {
                         Profile
                       </li>
                       <li
-                        onClick={handleLogout}
+                        onClick={() => setShowLogoutModal(true)}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                       >
                         Logout
@@ -151,6 +160,74 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">
+              Confirm Logout
+            </h3>
+            <p className="mb-6 text-gray-600">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-orange-500 text-white hover:bg-orange-600"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Prompt Modal */}
+      {showAuthPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">
+              Login or Sign Up Required
+            </h3>
+            <p className="mb-6 text-gray-600">
+              You have to log in or sign up first to access this feature.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 rounded bg-orange-500 text-white hover:bg-orange-600"
+                onClick={() => {
+                  setShowAuthPrompt(false);
+                  navigate("/login");
+                }}
+              >
+                Login
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                onClick={() => {
+                  setShowAuthPrompt(false);
+                  navigate("/signin");
+                }}
+              >
+                Sign Up
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                onClick={() => setShowAuthPrompt(false)}
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
