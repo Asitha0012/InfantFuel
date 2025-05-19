@@ -10,7 +10,7 @@ import Tracker from './pages/Tracker';
 import Contact from './pages/contact';
 import About from './pages/About';
 import Footer from './Components/Footer';
-import Support from './pages/support';
+import Network from './pages/Network';
 import Termsandconditions from './pages/termsandconditions';
 import Profile from './pages/profile';
 import Notification from './pages/notification';
@@ -34,7 +34,7 @@ const App = () => {
         <Route path="/parentprofile" element={<ProfileParent />} />
         <Route path="/Profilehealth" element={<Profilehealth />} />
         <Route path="/about" element={<About />} />
-        <Route path="/support" element={<Support />} />
+        <Route path="/network" element={<Network />} />
         <Route path="/termsandconditions" element={<Termsandconditions />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/notification" element={<Notification />} />
