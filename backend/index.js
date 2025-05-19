@@ -10,6 +10,7 @@ import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js"; 
+import connectionRoutes from "./routes/connectionRoutes.js";
 
 
 
@@ -31,6 +32,7 @@ const PORT = process.env.PORT || 3000;
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/events", eventRoutes);
+app.use("/api/v1/connections", connectionRoutes);
 
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname + "/uploads")));

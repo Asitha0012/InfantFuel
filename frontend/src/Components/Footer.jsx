@@ -21,7 +21,7 @@ const Footer = () => {
             <a href="/about" className="hover:underline">About Us</a>
             <a href="/contact" className="hover:underline">Contact Us</a>
             <a href="/termsandconditions" className="hover:underline">Privacy Policy</a>
-            <a href="/support" className="hover:underline">Help</a>
+            <a href="/Network" className="hover:underline">Help</a>
             <a href="/articles" className="hover:underline">Articles</a>
           </div>
           <p className="text-xs text-gray-500 mt-4">© 2024 - EE5206 Software Project</p>
