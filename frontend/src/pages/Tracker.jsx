@@ -149,11 +149,17 @@ const Tracker = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Growth Tracking Section */}
-          <Section title="Growth Tracking" onClick={() => navigate('/growth-tracking')}>
+          <Section title="Growth Tracking">
             <div className="grid grid-cols-3 gap-4">
-              <TrackingCard icon={Scale} label="Weight" />
-              <TrackingCard icon={Ruler} label="Height" />
-              <TrackingCard icon={CircleDot} label="Head circumference" />
+            <section title="vaccine" onClick={() => navigate('/growth-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Scale} label="Weight" />
+            </section>
+            <section title="vaccine" onClick={() => navigate('/growth-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={Ruler} label="Height" />
+            </section>
+            <section title="vaccine" onClick={() => navigate('/growth-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={CircleDot} label="Head circumference" />
+            </section>
             </div>
           </Section>
 
