@@ -21,6 +21,7 @@ import Nutrition from './pages/nutrition';
 import Nutrifluid from './pages/nutrifluid';
 import Nutrisolid from './pages/nutrisolid';
 
+
 const App = () => {
   return (
     <Router>
@@ -48,6 +49,7 @@ const App = () => {
 
         <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
         <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
+        
    
 
       </Routes>
