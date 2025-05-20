@@ -6,7 +6,8 @@ export const connectionsApi = apiSlice.injectEndpoints({
       query: (params) => ({
         url: `/api/v1/connections/search?${new URLSearchParams(params)}`,
       }),
-    }),
+      providesTags: ["Connections"], // <-- Add this line
+      }),
     sendRequest: builder.mutation({
       query: (data) => ({
         url: "/api/v1/connections/request",

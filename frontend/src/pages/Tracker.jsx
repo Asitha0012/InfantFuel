@@ -34,11 +34,10 @@ const Section = ({ title, children, onClick }) => (
     className="bg-purple-50 p-6 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors"
     onClick={onClick}
   >
-    <h2 className="text-xl font-semibold mb-4">{title}</h2>
+    <h2 className="text-xl font-semibold mb-4 text-indigo-700">{title}</h2>
     {children}
   </div>
 );
-
 Section.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.node,
@@ -210,15 +209,13 @@ const Tracker = () => {
         </div>
 
         {/* Upcoming Section */}
-       <Section
-        title={
-          <span className="text-indigo-700 font-semibold">
-            {userInfo.isAdmin
-             ? "Upcoming (set events by clicking on dates and notify parents)"
-             : "Upcoming"}
-             </span>
-              }
-              >
+     <Section
+  title={
+    userInfo.isAdmin
+      ? "Upcoming (set events by clicking on dates and notify parents)"
+      : "Upcoming"
+  }
+>
           <div className="bg-white rounded-lg p-4 flex justify-center">
             <div className="w-full max-w-4xl">
               <FullCalendar
