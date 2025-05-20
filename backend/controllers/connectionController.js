@@ -10,7 +10,6 @@ const searchUsers = async (req, res) => {
 
     let users;
     if (req.user.isAdmin) {
-      // Provider: search parents by parent name or baby name
       users = await User.find({
         isAdmin: false,
         $or: [
@@ -19,7 +18,6 @@ const searchUsers = async (req, res) => {
         ],
       }).select("fullName babyDetails address contactNumber");
     } else {
-      // Parent: search providers by name or professional registration number
       users = await User.find({
         isAdmin: true,
         $or: [
@@ -28,7 +26,37 @@ const searchUsers = async (req, res) => {
         ],
       }).select("fullName professionalRegistrationNumber contactNumber position district");
     }
-    res.json(users);
+
+    // Get all current connections (accepted/pending) for this user
+    const connections = await Connection.find({
+      $or: [
+        { from: req.user._id },
+        { to: req.user._id }
+      ]
+    });
+
+    // Build maps for quick lookup
+    const connectionMap = {};
+    const connectionIdMap = {};
+    connections.forEach(conn => {
+      if (conn.from.toString() === req.user._id.toString()) {
+        connectionMap[conn.to.toString()] = conn.status;
+        connectionIdMap[conn.to.toString()] = conn._id;
+      }
+      if (conn.to.toString() === req.user._id.toString()) {
+        connectionMap[conn.from.toString()] = conn.status;
+        connectionIdMap[conn.from.toString()] = conn._id;
+      }
+    });
+
+    // Return users with connection status and connectionId
+    const enriched = users.map(u => ({
+      ...u.toObject(),
+      connectionStatus: connectionMap[u._id.toString()] || "none",
+      connectionId: connectionIdMap[u._id.toString()] || null
+    }));
+
+    res.json(enriched);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

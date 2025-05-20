@@ -8,10 +8,6 @@ import { apiSlice } from "../redux/api/apiSlice";
 import { useLogoutMutation } from "../redux/api/users";
 
 const Navbar = () => {
-  const [activeTab, setActiveTab] = useState("Home");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,10 +26,37 @@ const Navbar = () => {
     []
   );
 
+  // Get initial tab based on current route
+  const getInitialTab = () => {
+    let matchedTab = tabs
+      .filter(tab =>
+        tab.path === "/"
+          ? location.pathname === "/"
+          : location.pathname.toLowerCase().startsWith(tab.path.toLowerCase())
+      )
+      .sort((a, b) => b.path.length - a.path.length)[0];
+    if (matchedTab) return matchedTab.name;
+    if (location.pathname === "/profile") return "Profile";
+    if (location.pathname === "/notifications") return "Notifications";
+    return "Home";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+
   useEffect(() => {
-    const currentTab = tabs.find((tab) => tab.path === location.pathname);
-    if (currentTab) {
-      setActiveTab(currentTab.name);
+    // Find the best matching tab for the current path (longest path match)
+    let matchedTab = tabs
+      .filter(tab =>
+        tab.path === "/"
+          ? location.pathname === "/"
+          : location.pathname.toLowerCase().startsWith(tab.path.toLowerCase())
+      )
+      .sort((a, b) => b.path.length - a.path.length)[0];
+    if (matchedTab) {
+      setActiveTab(matchedTab.name);
     } else if (location.pathname === "/profile") {
       setActiveTab("Profile");
     } else if (location.pathname === "/notifications") {
@@ -50,7 +73,7 @@ const Navbar = () => {
       setShowAuthPrompt(true);
       return;
     }
-    setActiveTab(tab.name);
+    // Do NOT setActiveTab here, let useEffect handle it after navigation
     navigate(tab.path);
   };
 
@@ -83,11 +106,11 @@ const Navbar = () => {
             <button
               key={tab.name}
               onClick={() => handleTabClick(tab)}
-              className={`px-3 py-2 rounded-md text-sm font-medium ${
+              className={`tab-highlight px-3 py-2 rounded-md text-sm font-medium ${
                 activeTab === tab.name
                   ? "text-white bg-orange-400 rounded-md"
                   : "text-gray-700"
-              } hover:border-b-2 hover:border-orange-400`}
+              } hover:border-b-2 hover:border-orange-400 transition-colors duration-200`}
             >
               {tab.name}
             </button>
@@ -121,7 +144,7 @@ const Navbar = () => {
                     : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
                 }`}
                 onClick={() => {
-                  setActiveTab("Notifications");
+                  navigate("/notifications");
                 }}
               >
                 <Bell className="h-5 w-5" />

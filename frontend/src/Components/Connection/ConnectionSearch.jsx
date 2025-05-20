@@ -4,7 +4,6 @@ import {
   useSearchUsersQuery,
   useSendRequestMutation,
   useAddConnectionDirectMutation,
-  useGetConnectionsQuery,
   useDeleteRequestMutation,
 } from "../../redux/api/connections";
 
@@ -13,6 +12,7 @@ const ConnectionSearch = () => {
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
   const [actionStatus, setActionStatus] = useState({});
+  const [confirmCancelId, setConfirmCancelId] = useState(null); // For confirmation modal
 
   // Debounce input
   useEffect(() => {
@@ -20,23 +20,13 @@ const ConnectionSearch = () => {
     return () => clearTimeout(handler);
   }, [search]);
 
-  const { data: results = [], isFetching } = useSearchUsersQuery(
+  const { data: results = [], isFetching, refetch } = useSearchUsersQuery(
     debounced ? { q: debounced } : {},
     { skip: !debounced }
   );
-  const { data: connectionsData, refetch } = useGetConnectionsQuery();
   const [sendRequest] = useSendRequestMutation();
   const [addDirect] = useAddConnectionDirectMutation();
   const [deleteRequest] = useDeleteRequestMutation();
-
-  // Find all connected and pending request user IDs from backend data
-  const connectedIds = new Set([
-    ...(connectionsData?.asFrom || []).filter(c => c.status === "accepted").map((c) => c.to._id),
-    ...(connectionsData?.asTo || []).filter(c => c.status === "accepted").map((c) => c.from._id),
-  ]);
-  const pendingIds = new Set([
-    ...(connectionsData?.asFrom || []).filter(c => c.status === "pending").map((c) => c.to._id),
-  ]);
 
   const handleSendRequest = async (to) => {
     setActionStatus((prev) => ({ ...prev, [to]: "pending" }));
@@ -60,23 +50,16 @@ const ConnectionSearch = () => {
     }
   };
 
-  const handleCancelRequest = async (to) => {
+  const handleCancelRequest = async (to, connectionId) => {
     setActionStatus((prev) => ({ ...prev, [to]: "pending" }));
     try {
-      await deleteRequest({ connectionId: findPendingConnectionId(to) }).unwrap();
+      await deleteRequest({ connectionId }).unwrap();
       setActionStatus((prev) => ({ ...prev, [to]: undefined }));
       refetch();
     } catch {
       setActionStatus((prev) => ({ ...prev, [to]: "error" }));
     }
-  };
-
-  // Helper to find the pending connectionId for a user
-  const findPendingConnectionId = (toId) => {
-    const pending = (connectionsData?.asFrom || []).find(
-      (c) => c.to._id === toId && c.status === "pending"
-    );
-    return pending ? pending._id : null;
+    setConfirmCancelId(null);
   };
 
   return (
@@ -134,37 +117,77 @@ const ConnectionSearch = () => {
                 )}
               </div>
               <div className="mt-2 md:mt-0 flex flex-col items-end">
-                {connectedIds.has(user._id) ? (
+                {user.connectionStatus === "accepted" ? (
                   <span className="text-green-600 font-semibold">
                     {userInfo.isAdmin ? "Added" : "Connected"}
                   </span>
                 ) : userInfo.isAdmin ? (
-                  <button
-                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                    disabled={actionStatus[user._id] === "pending" || actionStatus[user._id] === "added"}
-                    onClick={() => handleAddDirect(user._id)}
-                  >
-                    {actionStatus[user._id] === "added"
-                      ? "Added"
-                      : actionStatus[user._id] === "pending"
-                      ? "Adding..."
-                      : "Add Direct"}
-                  </button>
-                ) : pendingIds.has(user._id) ? (
+                  user.connectionStatus === "pending" ? (
+                    <span className="text-orange-600 font-semibold">
+                      Pending
+                    </span>
+                  ) : (
+                    <button
+                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                      disabled={actionStatus[user._id] === "pending" || actionStatus[user._id] === "added"}
+                      onClick={() => handleAddDirect(user._id)}
+                    >
+                      {actionStatus[user._id] === "added"
+                        ? "Added"
+                        : actionStatus[user._id] === "pending"
+                        ? "Adding..."
+                        : "Add Direct"}
+                    </button>
+                  )
+                ) : user.connectionStatus === "pending" && user.connectionId ? (
                   <>
                     <button
                       className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                       disabled={actionStatus[user._id] === "pending"}
-                      onClick={() => handleCancelRequest(user._id)}
+                      onClick={() => setConfirmCancelId(user._id)}
                     >
                       {actionStatus[user._id] === "pending"
                         ? "Cancelling..."
                         : "Cancel Request"}
                     </button>
-                    <span className="text-orange-600 text-xs mt-1">
+                    <span className="text-green-600 text-xs mt-1">
                       Request has been successfully sent
                     </span>
+                    {/* Confirmation Modal */}
+                    {confirmCancelId === user._id && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                        <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+                          <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                            Confirm Cancel
+                          </h3>
+                          <p className="mb-6 text-gray-600">
+                            Are you sure you want to cancel this request?
+                          </p>
+                          <div className="flex justify-end space-x-2">
+                            <button
+                              className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                              onClick={() => setConfirmCancelId(null)}
+                            >
+                              Back
+                            </button>
+                            <button
+                              className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                              onClick={() => handleCancelRequest(user._id, user.connectionId)}
+                              disabled={actionStatus[user._id] === "pending"}
+                            >
+                              {actionStatus[user._id] === "pending"
+                                ? "Cancelling..."
+                                : "Yes, Cancel"}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </>
+                ) : user.connectionStatus === "pending" ? (
+                  <span className="text-orange-600 text-xs mt-1">
+                    (Unable to cancel: missing connectionId)
+                  </span>
                 ) : (
                   <button
                     className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"

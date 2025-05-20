@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const ConnectionList = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  const { data, isLoading, refetch } = useGetConnectionsQuery();
+  const { data, isLoading } = useGetConnectionsQuery();
   const [deleteConnection] = useDeleteConnectionMutation();
   const [deleting, setDeleting] = useState({});
   const [confirmId, setConfirmId] = useState(null);
@@ -28,7 +28,7 @@ const ConnectionList = () => {
     setDeleting((prev) => ({ ...prev, [connectionId]: true }));
     try {
       await deleteConnection({ connectionId }).unwrap();
-      refetch(); // Ensure the connection list and search list are updated
+      // RTK Query will refetch and update all relevant queries automatically
     } catch (error) {
       console.error("Failed to delete connection:", error);
     }
