@@ -111,6 +111,14 @@ const Tracker = () => {
 
   // Handle date click (add event) - only for admins
   const handleDateClick = (info) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today
+    const clickedDate = new Date(info.dateStr);
+    clickedDate.setHours(0, 0, 0, 0);
+    if (clickedDate < today) {
+      window.alert("You can't set an event in the past. Please select today or a future date.");
+      return;
+    }
     setModalData({
       date: info.dateStr,
       title: "",

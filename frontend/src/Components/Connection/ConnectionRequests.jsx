@@ -9,6 +9,7 @@ import { useState } from "react";
 
 const ConnectionRequests = () => {
   const { userInfo } = useSelector((state) => state.auth);
+  // Always call hooks at the top level
   const { data: requests = [], isLoading, refetch } = useGetIncomingRequestsQuery(undefined, {
     skip: !userInfo?.isAdmin,
   });
@@ -19,6 +20,11 @@ const ConnectionRequests = () => {
   const [deleting, setDeleting] = useState({});
   const [confirmId, setConfirmId] = useState(null);
   const [confirmType, setConfirmType] = useState(null); // "pending" or "accepted"
+
+  // Only render for healthcare providers
+  if (!userInfo?.isAdmin) {
+    return null;
+  }
 
   const handleAccept = async (id) => {
     setAccepting((prev) => ({ ...prev, [id]: true }));
@@ -48,15 +54,6 @@ const ConnectionRequests = () => {
     setConfirmType(null);
   };
 
-  if (!userInfo?.isAdmin) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto text-center text-gray-500">
-        Only healthcare providers can view incoming connection requests.
-      </div>
-    );
-  }
-
-  // Show both pending and accepted requests
   return (
     <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto">
       <h2 className="text-xl font-semibold mb-4 text-blue-900">Incoming Connection Requests</h2>
