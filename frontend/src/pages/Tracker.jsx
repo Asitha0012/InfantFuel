@@ -84,6 +84,7 @@ const Tracker = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [viewMode, setViewMode] = useState(false);
+  const [showPastDateMsg, setShowPastDateMsg] = useState(false);
 
   const recentActivities = [
     { activity: 'Weight', date: '09/12/2024 at 10.30am', updatedBy: 'Midwife' },
@@ -116,7 +117,7 @@ const Tracker = () => {
     const clickedDate = new Date(info.dateStr);
     clickedDate.setHours(0, 0, 0, 0);
     if (clickedDate < today) {
-      window.alert("You can't set an event in the past. Please select today or a future date.");
+      setShowPastDateMsg(true);
       return;
     }
     setModalData({
@@ -153,6 +154,20 @@ const Tracker = () => {
     <>
       <Navbar />
       <div className="max-w-6xl mx-auto p-6 space-y-10 mt-20">
+        {/* Show message box if trying to set event in the past */}
+        {showPastDateMsg && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full flex flex-col items-center">
+              <div className="text-lg font-semibold text-red-600 mb-4">You can&apos;t set events for past days.</div>
+              <button
+                className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+                onClick={() => setShowPastDateMsg(false)}
+              >
+                Back to Calendar
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Growth Tracking Section */}
