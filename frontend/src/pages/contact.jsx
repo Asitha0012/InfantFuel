@@ -1,6 +1,7 @@
 
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
+import AIChatWidget from '../Components/AIChatWidget';
 
 
 const ContactUs = () => {
@@ -55,6 +56,7 @@ const ContactUs = () => {
           </div>
         </form>
       </div>
+      <AIChatWidget />
      <Footer />
     </div>
   );

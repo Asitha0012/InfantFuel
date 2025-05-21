@@ -4,10 +4,12 @@ import ConnectionSearch from "../Components/Connection/ConnectionSearch";
 import ConnectionRequests from "../Components/Connection/ConnectionRequests";
 import ConnectionList from "../Components/Connection/ConnectionList";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const Network = () => {
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(true);
+  const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     // Fetch user profile from your backend API
@@ -51,15 +53,21 @@ const Network = () => {
               <div className="mb-8">
                 <ConnectionSearch />
               </div>
-              {/* Optionally, fetch user role from API and show requests for providers */}
-              <div className="mb-8">
-                <div className="bg-orange-50 rounded-xl shadow p-4">
-                  <h2 className="text-lg font-semibold text-orange-700 mb-3">Connection Requests</h2>
-                  <ConnectionRequests />
+              {/* Only show ConnectionRequests for healthcare providers (isAdmin) */}
+              {displayName && !loading && userInfo?.isAdmin && (
+                <div className="mb-8">
+                  <div className="bg-orange-50 rounded-xl shadow p-4">
+                    <h2 className="text-lg font-semibold text-orange-700 mb-3">
+                      Connection Requests
+                    </h2>
+                    <ConnectionRequests />
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="bg-blue-50 rounded-xl shadow p-4">
-                <h2 className="text-lg font-semibold text-blue-700 mb-3">Your Connections</h2>
+                <h2 className="text-lg font-semibold text-blue-700 mb-3">
+                  Your Connections
+                </h2>
                 <ConnectionList />
               </div>
             </div>
