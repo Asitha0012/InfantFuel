@@ -1,4 +1,6 @@
 import Event from "../models/Event.js";
+import Connection from "../models/Connection.js";
+import { createNotification } from "../utils/notify.js";
 
 // Create a new event (healthcare provider only)
 const createEvent = async (req, res) => {
@@ -19,6 +21,20 @@ const createEvent = async (req, res) => {
       },
     });
     await event.save();
+    // Notification trigger: notify all connected parents
+    const connections = await Connection.find({
+      from: req.user._id,
+      status: "accepted",
+    });
+    for (const conn of connections) {
+      await createNotification({
+        user: conn.to, // parent
+        type: "event_created",
+        message: `${req.user.fullName} has created a new event.`,
+        link: "/tracker",
+        createdBy: req.user._id,
+      });
+    }
     res.status(201).json(event);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -28,8 +44,45 @@ const createEvent = async (req, res) => {
 // Get all events (for calendar, visible to all)
 const getEvents = async (req, res) => {
   try {
-    const events = await Event.find();
-    res.json(events);
+    // If user is a parent, only show events from connected providers
+    if (!req.user.isAdmin) {
+      // Find all providers this parent is connected to
+      const connections = await Connection.find({
+        to: req.user._id,
+        status: "accepted",
+      });
+      const providerIds = connections.map((conn) => conn.from);
+      // Only show events created by connected providers
+      const events = await Event.find({
+        "createdBy.userId": { $in: providerIds },
+      });
+      // Convert createdBy.userId to string for frontend compatibility
+      const eventsWithStringIds = events.map((e) => ({
+        ...e.toObject(),
+        createdBy: {
+          ...e.createdBy,
+          userId: e.createdBy.userId.toString(),
+        },
+      }));
+      return res.json(eventsWithStringIds);
+    }
+    // If user is a provider, show only their own events
+    if (req.user.isAdmin) {
+      const events = await Event.find({
+        "createdBy.userId": req.user._id,
+      });
+      // Convert createdBy.userId to string for frontend compatibility
+      const eventsWithStringIds = events.map((e) => ({
+        ...e.toObject(),
+        createdBy: {
+          ...e.createdBy,
+          userId: e.createdBy.userId.toString(),
+        },
+      }));
+      return res.json(eventsWithStringIds);
+    }
+    // Default fallback (should not hit)
+    res.json([]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

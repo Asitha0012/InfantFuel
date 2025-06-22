@@ -66,4 +66,20 @@ router.post("/", (req, res) => {
   });
 });
 
+// Route to handle image deletion
+router.delete("/", (req, res) => {
+  const { imagePath } = req.body;
+  if (!imagePath) {
+    return res.status(400).json({ message: "No image path provided" });
+  }
+  // Remove leading slash if present
+  const filePath = imagePath.startsWith("/") ? imagePath.slice(1) : imagePath;
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      return res.status(404).json({ message: "Image not found or already deleted" });
+    }
+    res.status(200).json({ message: "Image deleted successfully" });
+  });
+});
+
 export default router;

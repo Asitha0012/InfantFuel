@@ -1,38 +1,49 @@
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import Image from '../Assets/InfantFuel logo-01.png';
+import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-purple-100 text-gray-700 text-sm py-10 mt-10">
-      <div className="max-w-7xl mx-auto px-10 py-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="flex items-center space-x-4">
-          <Link to="/"> 
-            <img src={Image} alt="InfantFuel Logo" className="h-20 w-25" />
+    <footer className="bg-gradient-to-r from-purple-200 via-white to-orange-100 text-gray-700 text-sm pt-10 pb-4 mt-10 border-t border-purple-200 shadow-inner">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        {/* Left: Logo & Brand */}
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+          <Link to="/">
+            <img src={Image} alt="InfantFuel Logo" className="h-16 w-auto rounded-xl shadow-md" />
           </Link>
-          <div className="text-left">
-            <p className="font-semibold text-lg">InfantFuel</p>
-            <p className="text-gray-600">Infant Growth and Nutritional Wellness Tracker</p>
+          <div className="text-center md:text-left">
+            <p className="font-bold text-xl text-purple-700 tracking-tight">InfantFuel</p>
+            <p className="text-gray-600 text-sm">Infant Growth & Nutritional Wellness Tracker</p>
           </div>
         </div>
 
-        {/* Center: Links */}
-        <div className="text-center flex flex-col justify-center">
-          <div className="flex justify-center flex-wrap gap-4">
-            <a href="/about" className="hover:underline">About Us</a>
-            <a href="/contact" className="hover:underline">Contact Us</a>
-            <a href="/termsandconditions" className="hover:underline">Privacy Policy</a>
-            <a href="/Network" className="hover:underline">Help</a>
-            <a href="/articles" className="hover:underline">Articles</a>
+        {/* Center: Navigation Links */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-wrap justify-center gap-5 text-base font-medium">
+            <Link to="/about" className="hover:text-purple-700 transition">About Us</Link>
+            <Link to="/contact" className="hover:text-purple-700 transition">Contact Us</Link>
+            <Link to="/termsandconditions" className="hover:text-purple-700 transition">Privacy Policy</Link>
+            <Link to="/Network" className="hover:text-purple-700 transition">Help</Link>
+            <Link to="/articles" className="hover:text-purple-700 transition">Articles</Link>
           </div>
-          <p className="text-xs text-gray-500 mt-4">© 2024 - EE5206 Software Project</p>
+          <div className="flex gap-4 mt-3">
+            <a href="#" aria-label="Facebook" className="hover:text-blue-600 transition"><Facebook size={20} /></a>
+            <a href="#" aria-label="Twitter" className="hover:text-sky-500 transition"><Twitter size={20} /></a>
+            <a href="#" aria-label="Instagram" className="hover:text-pink-500 transition"><Instagram size={20} /></a>
+            <a href="#" aria-label="LinkedIn" className="hover:text-blue-800 transition"><Linkedin size={20} /></a>
+          </div>
         </div>
 
-        {/* Right: Address */}
-        <div className="text-right space-y-2">
+        {/* Right: Contact Info */}
+        <div className="text-center md:text-right space-y-2 text-sm">
+          <p className="font-semibold text-gray-700">Contact</p>
           <p>345 Faulconer Drive, Suite 4<br />Charlottesville, VA 12345</p>
           <p>(123) 456-7890</p>
-          <p>InfantFuel@xyz.com</p>
+          <p className="text-purple-700 font-medium">InfantFuel@xyz.com</p>
         </div>
+      </div>
+      <div className="mt-8 border-t border-gray-200 pt-4 text-center text-xs text-gray-500">
+        © 2024 - EE5206 Software Project. All rights reserved.
       </div>
     </footer>
   );
