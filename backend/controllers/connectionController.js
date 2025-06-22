@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import Connection from "../models/Connection.js";
-
+import { createNotification } from "../utils/notify.js";
 
 // Search users (parents search providers by name/regNo, providers search babies/parents by name)
 const searchUsers = async (req, res) => {
@@ -88,6 +88,14 @@ const sendRequest = async (req, res) => {
       status: "pending"
     });
     await connection.save();
+    // Notification trigger: parent sends connection request
+    await createNotification({
+      user: to, // provider
+      type: "connection_request",
+      message: `${fromUser.fullName} has sent a connection request.`,
+      link: "/network",
+      createdBy: req.user._id,
+    });
     res.status(201).json(connection);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -137,6 +145,14 @@ const addConnectionDirect = async (req, res) => {
       status: "accepted"
     });
     await connection.save();
+    // Notification trigger: provider adds parent profile directly
+    await createNotification({
+      user: to, // parent
+      type: "profile_added",
+      message: `${fromUser.fullName} has added you to the network.`,
+      link: "/network",
+      createdBy: req.user._id,
+    });
     res.status(201).json(connection);
   } catch (error) {
     res.status(500).json({ message: error.message });

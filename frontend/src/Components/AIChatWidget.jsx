@@ -11,7 +11,7 @@ const AIChatWidget = () => {
     setMessages([...messages, { from: "user", text: input }]);
     setLoading(true);
 
-    // Call your backend endpoint instead of Hugging Face directly
+    
     const response = await fetch("/api/ai-chat", {
       method: "POST",
       headers: {

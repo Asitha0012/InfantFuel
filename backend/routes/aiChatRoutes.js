@@ -1,17 +1,22 @@
 import express from "express";
 import axios from "axios";
+import fs from "fs";
+import path from "path";
 const router = express.Router();
 
-const HF_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-3B";
-const HF_API_TOKEN = process.env.HF_API_TOKEN; // Store your token in .env
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const SITE_URL = process.env.SITE_URL || "";
+const SITE_NAME = process.env.SITE_NAME || "";
 
-// Add simple keyword-based responses for greetings and thanks
-const greetings = ["hi", "hello", "hey"]; 
+const greetings = ["hi", "hello", "hey"];
 const thanks = ["thank you", "thanks", "thx"];
 
 router.post("/", async (req, res) => {
+  console.log("[AIChat] Incoming request:", req.body);
   const { message } = req.body;
   const lowerMsg = message.trim().toLowerCase();
+  console.log("OPENROUTER_API_KEY:", OPENROUTER_API_KEY);
   if (greetings.some(greet => lowerMsg === greet)) {
     return res.json({ reply: "Hello! How can I help you today?" });
   }
@@ -19,32 +24,44 @@ router.post("/", async (req, res) => {
     return res.json({ reply: "You're welcome! If you have more questions, just ask." });
   }
   try {
-    // Just send the user's message to the model (no FAQ context)
+    let projectContext = "";
+    try {
+      projectContext = fs.readFileSync(path.join(process.cwd(), "README.md"), "utf-8");
+    } catch (e) {
+      projectContext = "";
+    }
+    const messages = [
+      {
+        role: "system",
+        content:
+          `You are an assistant for the InfantFuel project. Use the following project context to answer the user's question as helpfully and concisely as possible. If the answer is not in the context, use your general knowledge, but always keep your answer short and to the point (2-3 sentences max).\n\nPROJECT CONTEXT:\n${projectContext}`,
+      },
+      { role: "user", content: message }
+    ];
     const response = await axios.post(
-      HF_API_URL,
-      { inputs: message },
+      OPENROUTER_API_URL,
+      {
+        model: "deepseek/deepseek-r1-0528:free",
+        messages: messages
+      },
       {
         headers: {
-          Authorization: `Bearer ${HF_API_TOKEN}`,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
+          ...(SITE_URL && { "HTTP-Referer": SITE_URL }),
+          ...(SITE_NAME && { "X-Title": SITE_NAME })
         },
+        timeout: 15000
       }
     );
-    // Log the response for debugging
-    console.log("HF API response:", response.data);
-    // The response may be an array or object depending on the model
     let reply = "Sorry, I couldn't understand that.";
-    if (response.data && response.data.generated_text) {
-      reply = response.data.generated_text;
-    } else if (Array.isArray(response.data) && response.data[0]?.generated_text) {
-      reply = response.data[0].generated_text;
-    } else if (typeof response.data === "string" && response.data.trim().length > 0) {
-      reply = response.data;
+    if (response.data && response.data.choices && response.data.choices[0]?.message?.content) {
+      reply = response.data.choices[0].message.content;
     }
     res.json({ reply });
   } catch (err) {
-    console.error("AI chat error:", err?.response?.data || err.message);
-    res.status(500).json({ error: "AI service error" });
+    console.error("AI service error:", err?.response?.data || err.message || err);
+    res.status(500).json({ error: "AI service error", details: err?.response?.data || err.message || err });
   }
 });
 

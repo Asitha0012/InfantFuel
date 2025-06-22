@@ -184,6 +184,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     if (user.userType === "parent") {
       user.contactNumber = req.body.contactNumber || user.contactNumber;
       user.address = req.body.address || user.address;
+      user.profilePicture = req.body.profilePicture || user.profilePicture; // Always update root profilePicture for parent
 
       if (user.babyDetails) {
         user.babyDetails.fullName = req.body.babyDetails?.fullName || user.babyDetails.fullName;

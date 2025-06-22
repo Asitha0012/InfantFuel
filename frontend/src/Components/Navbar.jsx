@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
-import { Bell, User } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { User } from "lucide-react";
 import logo from "../assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/features/auth/authSlice";
 import { apiSlice } from "../redux/api/apiSlice";
 import { useLogoutMutation } from "../redux/api/users";
+import NotificationBell from "./NotificationBell";
 
 const Navbar = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -45,6 +46,9 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const notificationRef = useRef(null);
+  const profileRef = useRef(null);
 
   useEffect(() => {
     // Find the best matching tab for the current path (longest path match)
@@ -63,6 +67,21 @@ const Navbar = () => {
       setActiveTab("Notifications");
     }
   }, [location.pathname, tabs]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotificationOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleTabClick = (tab) => {
     // If unauthenticated and tab is Tracker or Network, show auth prompt
@@ -101,7 +120,7 @@ const Navbar = () => {
           <img src={logo} alt="InfantFuel Logo" className="h-14 w-auto" />
         </div>
         {/* Tabs */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 items-center h-full">
           {tabs.map((tab) => (
             <button
               key={tab.name}
@@ -118,7 +137,7 @@ const Navbar = () => {
         </div>
 
         {/* Right-Side Actions */}
-        <div className="flex items-center space-x-4 relative">
+        <div className="flex items-center space-x-4 relative h-full">
           {!userInfo ? (
             <>
               {/* Login and Sign Up Buttons */}
@@ -137,31 +156,25 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <button
-                className={`px-5 py-4 text-sm font-medium ${
-                  activeTab === "Notifications"
-                    ? "text-white bg-orange-400 rounded-md"
-                    : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
-                }`}
-                onClick={() => {
-                  navigate("/notifications");
-                }}
-              >
-                <Bell className="h-5 w-5" />
-              </button>
-              <div className="relative">
+              {/* Notification Bell */}
+              <div ref={notificationRef} className="relative">
+                <NotificationBell iconSize={20} open={notificationOpen} setOpen={setNotificationOpen} />
+              </div>
+              {/* Profile/User Dropdown */}
+              <div ref={profileRef} className="relative flex items-center" style={{ alignItems: 'flex-start' }}>
                 <button
                   className={`px-5 py-4 text-sm font-medium ${
                     activeTab === "Profile"
                       ? "text-white bg-orange-400 rounded-md"
                       : "text-gray-700 hover:bg-orange-100 hover:rounded-md hover:text-gray-900"
                   }`}
+                  style={{ marginTop: '-2px' }}
                   onClick={() => setShowDropdown((prev) => !prev)}
                 >
                   <User className="h-5 w-5" />
                 </button>
                 {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-lg">
+                  <div className="absolute right-0 mt-10 w-48 bg-white text-gray-800 rounded-md shadow-lg z-50">
                     <ul className="py-2">
                       <li
                         onClick={handleProfileClick}

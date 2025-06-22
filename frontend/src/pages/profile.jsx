@@ -85,6 +85,27 @@ const Profile = () => {
     }
   };
 
+  // Delete profile picture handler
+  const handleDeleteProfilePicture = async () => {
+    try {
+      // Only delete if there is an avatar and it's not a preview
+      const imagePath = editedUser.avatar;
+      if (!imagePath) return;
+      const res = await fetch("/api/v1/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imagePath }),
+      });
+      if (!res.ok) throw new Error("Failed to delete image");
+      setEditedUser((prev) => ({ ...prev, avatar: "" }));
+      setPreviewAvatar("");
+      setAvatarFile(null);
+      toast.success("Profile picture deleted");
+    } catch (err) {
+      toast.error(err.message || "Failed to delete image");
+    }
+  };
+
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswords((prev) => ({ ...prev, [name]: value }));
@@ -94,13 +115,13 @@ const Profile = () => {
   const uploadProfilePicture = async (file) => {
     const data = new FormData();
     data.append("image", file);
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/api/v1/upload", {
       method: "POST",
       body: data,
     });
     if (!res.ok) throw new Error("Image upload failed");
     const result = await res.json();
-    return result.url;
+    return result.image; // Use 'image' field from backend response
   };
 
   const handleSave = async () => {
@@ -143,6 +164,7 @@ const Profile = () => {
       await updateProfile(updatedData).unwrap();
       toast.success("Profile updated successfully!");
       setUser({ ...editedUser, avatar: profilePictureUrl });
+      setEditedUser((prev) => ({ ...prev, avatar: profilePictureUrl })); // Ensure editedUser is updated too
       setEditMode(false);
       setChangePassword(false);
       setPasswords({ current: "", new: "", confirm: "" });
@@ -160,6 +182,14 @@ const Profile = () => {
     setPasswords({ current: "", new: "", confirm: "" });
     setPreviewAvatar("");
     setAvatarFile(null);
+  };
+
+  // Helper to format date for <input type="date" />
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d)) return "";
+    return d.toISOString().split("T")[0];
   };
 
   if (isLoading) {
@@ -195,13 +225,22 @@ const Profile = () => {
                 )}
               </div>
               {editMode && (
-                <div className="mt-2">
+                <div className="mt-2 flex flex-col items-center gap-2">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleAvatarChange}
                     className="text-sm"
                   />
+                  {editedUser.avatar && (
+                    <button
+                      type="button"
+                      className="mt-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                      onClick={handleDeleteProfilePicture}
+                    >
+                      Delete Profile Picture
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -291,13 +330,13 @@ const Profile = () => {
                         <input
                           type="date"
                           name="birthdate"
-                          value={editedUser.birthdate}
+                          value={formatDate(editedUser.birthdate)}
                           onChange={handleChange}
                           className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full"
                         />
                       ) : (
                         <p className="border border-gray-300 rounded-md px-3 py-2 mt-1 min-h-[40px]">
-                          {user.birthdate ? user.birthdate.split("T")[0] : "-"}
+                          {user.birthdate ? formatDate(user.birthdate) : "-"}
                         </p>
                       )}
                     </div>
