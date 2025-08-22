@@ -13,12 +13,12 @@ import Footer from './Components/Footer';
 import Network from './pages/Network';
 import Termsandconditions from './pages/termsandconditions';
 import Profile from './pages/profile';
-import GrowthTracking from './pages/growthtracking';
 import Health from './pages/health';
 import Medication from './pages/medication';
 import Nutrition from './pages/nutrition';
 import Nutrifluid from './pages/nutrifluid';
 import Nutrisolid from './pages/nutrisolid';
+import Weight from './pages/Tracker/Weight';
 
 
 const App = () => {
@@ -37,7 +37,6 @@ const App = () => {
         <Route path="/network" element={<Network />} />
         <Route path="/termsandconditions" element={<Termsandconditions />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/growth-tracking" element={<GrowthTracking />} />
         <Route path="/health-tracking" element={<Health />} />
         <Route path="/nutrition-tracking" element={<Nutrition />} />
         <Route path="/medication-tracking" element={<Medication />} />
@@ -47,6 +46,8 @@ const App = () => {
 
         <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
         <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
+        <Route path="/weight-tracking" element={<Weight />} />
+        <Route path="/growth-tracking" element={<Weight />} />
         
    
 
