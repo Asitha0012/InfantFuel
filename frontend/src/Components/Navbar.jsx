@@ -29,6 +29,8 @@ const Navbar = () => {
 
   // Get initial tab based on current route
   const getInitialTab = () => {
+    // Treat /weight-tracking and /growth-tracking as Tracker
+    if (["/weight-tracking", "/growth-tracking"].includes(location.pathname)) return "Tracker";
     let matchedTab = tabs
       .filter(tab =>
         tab.path === "/"
@@ -52,6 +54,10 @@ const Navbar = () => {
 
   useEffect(() => {
     // Find the best matching tab for the current path (longest path match)
+    if (["/weight-tracking", "/growth-tracking"].includes(location.pathname)) {
+      setActiveTab("Tracker");
+      return;
+    }
     let matchedTab = tabs
       .filter(tab =>
         tab.path === "/"
