@@ -57,6 +57,10 @@ export const connectionsApi = apiSlice.injectEndpoints({
       query: () => "/api/v1/connections",
       providesTags: ["Connections"],
     }),
+    getConnectedBabies: builder.query({
+      query: () => "/api/v1/weight/connected-babies",
+      providesTags: ["ConnectedBabies"],
+    }),
   }),
 });
 
@@ -69,4 +73,5 @@ export const {
   useDeleteConnectionMutation,
   useGetIncomingRequestsQuery,
   useGetConnectionsQuery,
+  useGetConnectedBabiesQuery,
 } = connectionsApi;

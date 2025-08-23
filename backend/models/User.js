@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+// Schema for baby vaccination details
+const vaccinationSchema = mongoose.Schema({
+  vaccineName: { type: String, required: true },
+  dateAdministered: { type: Date, required: true },
+  nextDueDate: { type: Date, default: null },
+  administeredBy: { type: String, default: null }, // Could store healthcare provider name or ID
+  notes: { type: String, default: null },
+});
+
+// Schema for baby details
 const babyDetailsSchema = mongoose.Schema({
   fullName: { type: String, required: true },
   dateOfBirth: { type: Date, required: true },
@@ -8,8 +18,13 @@ const babyDetailsSchema = mongoose.Schema({
   birthHeight: { type: String, default: null },
   bloodGroup: { type: String, default: null },
   profilePicture: { type: String, default: null },
+  vaccinations: {
+    type: [vaccinationSchema], // Array of vaccinations
+    default: [],
+  },
 });
 
+// Main User schema
 const userSchema = mongoose.Schema(
   {
     fullName: {
@@ -22,6 +37,15 @@ const userSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+
+    passwordChangedAt: {
+      type: Date,
+    },
+
+    connections: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
 
     password: {
       type: String,
@@ -61,41 +85,41 @@ const userSchema = mongoose.Schema(
       },
     },
 
-workplaceAddress: {
-  type: String,
-  required: function () {
-    return this.userType === "healthcareProvider";
-  },
-},
-district: {
-  type: String,
-  required: function () {
-    return this.userType === "healthcareProvider";
-  },
-},
-gramaNiladhariDivision: {
-  type: String,
-  required: function () {
-    return this.userType === "healthcareProvider";
-  },
-},
-position: {
-  type: String,
-  required: function () {
-    return this.userType === "healthcareProvider";
-  },
-},
-professionalRegistrationNumber: {
-  type: String,
-  required: function () {
-    return this.userType === "healthcareProvider";
-  },
-},
-profilePicture: {
-  type: String,
-  default: null,
-},
+    workplaceAddress: {
+      type: String,
+      required: function () {
+        return this.userType === "healthcareProvider";
+      },
+    },
+    district: {
+      type: String,
+      required: function () {
+        return this.userType === "healthcareProvider";
+      },
+    },
+    gramaNiladhariDivision: {
+      type: String,
+      required: function () {
+        return this.userType === "healthcareProvider";
+      },
+    },
+    position: {
+      type: String,
+      required: function () {
+        return this.userType === "healthcareProvider";
+      },
+    },
+    professionalRegistrationNumber: {
+      type: String,
+      required: function () {
+        return this.userType === "healthcareProvider";
+      },
+    },
 
+    profilePicture: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
