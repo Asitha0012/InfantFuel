@@ -24,7 +24,15 @@ const createUser = asyncHandler(async (req, res) => {
   if (userType === "parent") {
     const { address, contactNumber, babyDetails } = additionalFields;
 
-    if (!address || !contactNumber || !babyDetails || !babyDetails.fullName || !babyDetails.dateOfBirth || !babyDetails.gender || !babyDetails.birthWeight) {
+    if (
+      !address ||
+      !contactNumber ||
+      !babyDetails ||
+      !babyDetails.fullName ||
+      !babyDetails.dateOfBirth ||
+      !babyDetails.gender ||
+      !babyDetails.birthWeight
+    ) {
       throw new Error("Please fill all the required fields for parent registration");
     }
 
@@ -109,18 +117,16 @@ const loginUser = asyncHandler(async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      existingUser.password
-    );
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
     if (isPasswordValid) {
       createToken(res, existingUser._id);
 
-      res.status(201).json({
+      res.status(200).json({            // ✅ changed from 201 → 200
         _id: existingUser._id,
-        username: existingUser.username,
+        fullName: existingUser.fullName, // ✅ fixed (was username)
         email: existingUser.email,
+        userType: existingUser.userType, // ✅ added
         isAdmin: existingUser.isAdmin,
       });
     } else {
@@ -158,9 +164,9 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       babyDetails: user.babyDetails, // For parents
       profilePicture: user.profilePicture,
       userType: user.userType,
-      workplaceAddress: user.workplaceAddress, // ADD THIS
-      position: user.position,                 // ADD THIS
-      professionalRegistrationNumber: user.professionalRegistrationNumber, // ADD THIS
+      workplaceAddress: user.workplaceAddress,
+      position: user.position,
+      professionalRegistrationNumber: user.professionalRegistrationNumber,
     });
   } else {
     res.status(404);
@@ -184,24 +190,34 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     if (user.userType === "parent") {
       user.contactNumber = req.body.contactNumber || user.contactNumber;
       user.address = req.body.address || user.address;
-      user.profilePicture = req.body.profilePicture || user.profilePicture; // Always update root profilePicture for parent
+      user.profilePicture = req.body.profilePicture || user.profilePicture;
 
       if (user.babyDetails) {
-        user.babyDetails.fullName = req.body.babyDetails?.fullName || user.babyDetails.fullName;
-        user.babyDetails.dateOfBirth = req.body.babyDetails?.dateOfBirth || user.babyDetails.dateOfBirth;
-        user.babyDetails.gender = req.body.babyDetails?.gender || user.babyDetails.gender;
-        user.babyDetails.birthWeight = req.body.babyDetails?.birthWeight || user.babyDetails.birthWeight;
-        user.babyDetails.birthHeight = req.body.babyDetails?.birthHeight || user.babyDetails.birthHeight;
-        user.babyDetails.bloodGroup = req.body.babyDetails?.bloodGroup || user.babyDetails.bloodGroup;
-        user.babyDetails.profilePicture = req.body.babyDetails?.profilePicture || user.babyDetails.profilePicture;
+        user.babyDetails.fullName =
+          req.body.babyDetails?.fullName || user.babyDetails.fullName;
+        user.babyDetails.dateOfBirth =
+          req.body.babyDetails?.dateOfBirth || user.babyDetails.dateOfBirth;
+        user.babyDetails.gender =
+          req.body.babyDetails?.gender || user.babyDetails.gender;
+        user.babyDetails.birthWeight =
+          req.body.babyDetails?.birthWeight || user.babyDetails.birthWeight;
+        user.babyDetails.birthHeight =
+          req.body.babyDetails?.birthHeight || user.babyDetails.birthHeight;
+        user.babyDetails.bloodGroup =
+          req.body.babyDetails?.bloodGroup || user.babyDetails.bloodGroup;
+        user.babyDetails.profilePicture =
+          req.body.babyDetails?.profilePicture || user.babyDetails.profilePicture;
       }
     } else if (user.userType === "healthcareProvider") {
       user.contactNumber = req.body.contactNumber || user.contactNumber;
       user.address = req.body.address || user.address;
       user.profilePicture = req.body.profilePicture || user.profilePicture;
-      user.workplaceAddress = req.body.workplaceAddress || user.workplaceAddress;
-      user.position = req.body.position || user.position; // ADD THIS
-      user.professionalRegistrationNumber = req.body.professionalRegistrationNumber || user.professionalRegistrationNumber; // ADD THIS
+      user.workplaceAddress =
+        req.body.workplaceAddress || user.workplaceAddress;
+      user.position = req.body.position || user.position;
+      user.professionalRegistrationNumber =
+        req.body.professionalRegistrationNumber ||
+        user.professionalRegistrationNumber;
     }
 
     const updatedUser = await user.save();
@@ -215,9 +231,10 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       contactNumber: updatedUser.contactNumber,
       address: updatedUser.address,
       profilePicture: updatedUser.profilePicture,
-      workplaceAddress: updatedUser.workplaceAddress, // ADD THIS
-      position: updatedUser.position,                 // ADD THIS
-      professionalRegistrationNumber: updatedUser.professionalRegistrationNumber, // ADD THIS
+      workplaceAddress: updatedUser.workplaceAddress,
+      position: updatedUser.position,
+      professionalRegistrationNumber:
+        updatedUser.professionalRegistrationNumber,
       ...(updatedUser.userType === "parent" && {
         babyDetails: updatedUser.babyDetails,
       }),

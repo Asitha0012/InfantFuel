@@ -104,11 +104,20 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     setShowLogoutModal(false);
+
+    // Make the API call but guard against it hanging indefinitely.
+    // If it fails or times out, we still clear local state and navigate.
+    const logoutPromise = logoutApi().unwrap();
+
+    const timeout = new Promise((resolve) => setTimeout(() => resolve(null), 5000));
+
     try {
-      await logoutApi().unwrap();
-    } catch {
-      // Optionally handle error
+      await Promise.race([logoutPromise, timeout]);
+    } catch (err) {
+      // ignore network errors — proceed to clear client state
     }
+
+    // Clear client authentication state regardless of network outcome
     dispatch(logout());
     dispatch(apiSlice.util.resetApiState());
     navigate("/");
