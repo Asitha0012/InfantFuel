@@ -19,7 +19,7 @@ import Nutrition from './pages/nutrition';
 import Nutrifluid from './pages/nutrifluid';
 import Nutrisolid from './pages/nutrisolid';
 import Weight from './pages/Tracker/Weight';
-
+import PrivateRoute from './pages/Auth/PrivateRoute';
 
 const App = () => {
   return (
@@ -31,23 +31,25 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/signin" element={<PageLayout />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/parentprofile" element={<ProfileParent />} />
-        <Route path="/Profilehealth" element={<Profilehealth />} />
         <Route path="/about" element={<About />} />
         <Route path="/network" element={<Network />} />
         <Route path="/termsandconditions" element={<Termsandconditions />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/health-tracking" element={<Health />} />
-        <Route path="/nutrition-tracking" element={<Nutrition />} />
-        <Route path="/medication-tracking" element={<Medication />} />
-
-        <Route path="/register/parent" element={<ProfileParent />} />
-        <Route path="/register/healthcare" element={<Profilehealth />} />
-
-        <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
-        <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
-        <Route path="/weight-tracking" element={<Weight />} />
-        <Route path="/growth-tracking" element={<Weight />} />
+        
+        {/* Protected Routes */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/health-tracking" element={<Health />} />
+          <Route path="/nutrition-tracking" element={<Nutrition />} />
+          <Route path="/medication-tracking" element={<Medication />} />
+          <Route path="/register/parent" element={<ProfileParent />} />
+          <Route path="/register/healthcare" element={<Profilehealth />} />
+          <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
+          <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
+          <Route path="/weight-tracking" element={<Weight />} />
+          <Route path="/growth-tracking" element={<Weight />} />
+          <Route path="/parentprofile" element={<ProfileParent />} />
+          <Route path="/Profilehealth" element={<Profilehealth />} />
+        </Route>
         
    
 
