@@ -29,8 +29,18 @@ const Navbar = () => {
 
   // Get initial tab based on current route
   const getInitialTab = () => {
-    // Treat /weight-tracking and /growth-tracking as Tracker
-    if (["/weight-tracking", "/growth-tracking"].includes(location.pathname)) return "Tracker";
+    // Treat all tracker-related routes as Tracker
+    const trackerRoutes = [
+      "/weight-tracking",
+      "/growth-tracking",
+      "/medication-tracking",
+      "/health-tracking",
+      "/nutrition-tracking",
+      "/nutrisolid-tracking",
+      "/nutrifluid-tracking",
+      "/tracker"
+    ];
+    if (trackerRoutes.some(route => location.pathname.startsWith(route))) return "Tracker";
     let matchedTab = tabs
       .filter(tab =>
         tab.path === "/"
@@ -54,7 +64,11 @@ const Navbar = () => {
 
   useEffect(() => {
     // Find the best matching tab for the current path (longest path match)
-    if (["/weight-tracking", "/growth-tracking"].includes(location.pathname)) {
+    if (["/weight-tracking", "/growth-tracking",].includes(location.pathname)) {
+      setActiveTab("Tracker");
+      return;
+    }
+    if (["/medication-tracking", "/health-tracking","/nutrition-tracking","/nutrisolid-tracking","/nutrifluid-tracking",].includes(location.pathname)) {
       setActiveTab("Tracker");
       return;
     }
