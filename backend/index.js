@@ -15,6 +15,7 @@ import aiChatRoutes from "./routes/aiChatRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import weightRoutes from "./routes/weightRoutes.js";
 import vaccinationRoutes from "./routes/vaccinationRoutes.js";
+import medicationRoutes from "./routes/medicationRoutes.js";
 
 
 
@@ -41,7 +42,7 @@ app.use("/api/ai-chat", aiChatRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/weights", weightRoutes);
 app.use("/api/v1/vaccinations", vaccinationRoutes);
-
+app.use("/api/v1/medications", medicationRoutes);
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
 
