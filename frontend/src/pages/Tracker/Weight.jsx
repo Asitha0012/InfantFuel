@@ -19,6 +19,15 @@ const Weight = () => {
   const user = useSelector((state) => state.auth.userInfo);
   const isProvider = user?.isAdmin === true;
   const isParent = user?.isAdmin === false;
+  
+  // Form states
+  const [weightForm, setWeightForm] = useState({
+    weight: "",
+    ageMonths: "",
+    ageYears: "",
+    date: new Date().toISOString().split('T')[0],
+    notes: ""
+  });
 
   // Sidebar: connected baby profiles (providers only)
   const {
@@ -337,6 +346,7 @@ const Weight = () => {
 // WeightEntryForm: used for direct entry below the graph
 function WeightEntryForm({ initial, onSubmit, onCancel }) {
   const [weight, setWeight] = useState(initial?.weight || "");
+  const [ageInMonths, setAgeInMonths] = useState(initial?.ageInMonths || "");
   const [dateRecorded, setDateRecorded] = useState(
     initial?.dateRecorded ? new Date(initial.dateRecorded).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
   );
@@ -345,15 +355,31 @@ function WeightEntryForm({ initial, onSubmit, onCancel }) {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!weight || isNaN(weight) || weight <= 0 || weight > 25) {
-      setError("Please enter a valid weight between 0.1kg and 25kg");
+    // Validate weight
+    if (!weight || isNaN(weight) || weight <= 0 || weight > 30) {
+      setError("Please enter a valid weight between 0.1kg and 30kg");
       return;
     }
+
+    // Validate age in months
+    const months = parseInt(ageInMonths) || 0;
+    if (months < 0 || months > 60) {
+      setError("Age must be between 0 and 60 months (5 years)");
+      return;
+    }
+
     setError(""); // Clear any existing error
-    onSubmit({ weight: parseFloat(weight), dateRecorded, notes });
+    onSubmit({ 
+      weight: parseFloat(weight), 
+      dateRecorded, 
+      notes,
+      ageInMonths: months
+    });
+
     // Reset form if it's a new entry (not editing)
     if (!initial) {
       setWeight("");
+      setAgeInMonths("");
       setNotes("");
       setDateRecorded(new Date().toISOString().slice(0, 10));
     }
@@ -369,7 +395,7 @@ function WeightEntryForm({ initial, onSubmit, onCancel }) {
             type="number"
             step="0.01"
             min="0.1"
-            max="25"
+            max="30"
             className="w-full border rounded px-3 py-2"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
@@ -377,6 +403,21 @@ function WeightEntryForm({ initial, onSubmit, onCancel }) {
             required
           />
         </div>
+        
+        <div>
+          <label className="block font-medium mb-1 text-sm">Age (months)</label>
+          <input
+            type="number"
+            min="0"
+            max="60"
+            className="w-full border rounded px-3 py-2"
+            value={ageInMonths}
+            onChange={(e) => setAgeInMonths(Math.min(60, Math.max(0, parseInt(e.target.value) || 0)))}
+            placeholder="Enter age in months"
+            required
+          />
+        </div>
+
         <div>
           <label className="block font-medium mb-1 text-sm">Date</label>
           <input
@@ -387,6 +428,7 @@ function WeightEntryForm({ initial, onSubmit, onCancel }) {
             required
           />
         </div>
+
         <div>
           <label className="block font-medium mb-1 text-sm">Notes (optional)</label>
           <input
