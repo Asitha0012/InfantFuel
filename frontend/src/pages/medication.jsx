@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetmedicationsQuery, useCreatemedicationsMutation } from "../redux/api/medications";
@@ -37,6 +37,7 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
     date: "",
     notes: ""
   });
+  const [feedback, setFeedback] = useState({ type: "", message: "" }); // success | error
 
   const medicationList = [
     "Paracetamol (Acetaminophen)",
@@ -88,10 +89,11 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
   console.log("Form submitted!"); // Check if function is called
   console.log("Form data:", form); // Check form values
   console.log("User info:", userInfo); // Check user authentication
+  setFeedback({ type: "", message: "" });
 
   if (viewMode === "nurse" && (!form.parentId || !form.childName)) {
     console.log("Validation failed: missing parent or child");
-    alert("Please select a parent and ensure child name is available");
+    setFeedback({ type: "error", message: "Please select a parent and ensure child name is available." });
     return;
   }
 
@@ -117,8 +119,8 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
     console.log("API Response:", response); // Check server response
     
     if (response) {
-      alert("Medication record saved successfully!");
-      refetch();
+      setFeedback({ type: "success", message: "Medication record saved successfully." });
+      await refetch();
       setForm({
         parentId: "",
         parentName: "",
@@ -135,7 +137,7 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
     console.error('Full error object:', err); // Check complete error
     console.error('Error message:', err?.data?.message);
     console.error('Error status:', err?.status);
-    alert(err?.data?.message || "Failed to save record. Please check all fields and try again.");
+    setFeedback({ type: "error", message: err?.data?.message || "Failed to save record. Please check all fields and try again." });
   }
 };
 
@@ -365,9 +367,29 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                     }`}
+                    aria-busy={isCreating}
                   >
-                    {isCreating ? "Recording..." : "Record Medication"}
+                    {isCreating ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-block h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                        Recording...
+                      </span>
+                    ) : (
+                      "Record Medication"
+                    )}
                   </button>
+
+                  {feedback.message && (
+                    <div
+                      className={`mt-3 px-3 py-2 rounded text-sm ${
+                        feedback.type === 'success'
+                          ? 'bg-green-50 text-green-700 border border-green-200'
+                          : 'bg-red-50 text-red-700 border border-red-200'
+                      }`}
+                    >
+                      {feedback.message}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

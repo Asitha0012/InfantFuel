@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,6 +10,8 @@ import {
 } from "../../redux/api/weights";
 import WHOGraph from "../../Components/WHOgraph";
 import Loader from "../../Components/Loader";
+import { Baby, Users, Scale, Image as ImageIcon } from "lucide-react";
+import whoChartImg from "../../Assets/WHO-Chart1.png";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import PropTypes from "prop-types";
@@ -20,16 +22,9 @@ const Weight = () => {
   const isProvider = user?.isAdmin === true;
   const isParent = user?.isAdmin === false;
   
-  // Form states
-  const [weightForm, setWeightForm] = useState({
-    weight: "",
-    ageMonths: "",
-    ageYears: "",
-    date: new Date().toISOString().split('T')[0],
-    notes: ""
-  });
+  // Form state handled by WeightEntryForm component
 
-  // Sidebar: connected baby profiles (providers only)
+  // Connected baby profiles (providers only)
   const {
     data: connectedProfiles = [],
     isLoading: loadingProfiles,
@@ -48,8 +43,30 @@ const Weight = () => {
     }
   }, [isProvider, isParent, connectedProfiles, user, selectedProfileId]);
 
-  // WHO overlay toggle
-  const [showWHO, setShowWHO] = useState(true);
+  // WHO overlay image toggle
+  const [showWHOOverlay, setShowWHOOverlay] = useState(false);
+  const chartContainerRef = useRef(null);
+  const [overlaySize, setOverlaySize] = useState({ width: 0, height: 0 });
+  // Overlay adjustments (configure in code)
+  const OVERLAY_CONFIG = {
+    topOffsetPx: 0,    // negative moves higher, positive moves lower
+    leftOffsetPx: 0,     // negative moves left, positive moves right
+    scale: 1,            // 1 = 100% size
+    opacity: 0.45,       // overlay transparency
+  };
+
+  // Keep overlay image perfectly fitting the chart container
+  useLayoutEffect(() => {
+    const updateSize = () => {
+      if (chartContainerRef.current) {
+        const rect = chartContainerRef.current.getBoundingClientRect();
+        setOverlaySize({ width: rect.width, height: rect.height });
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   // Weight entry form state
   const [editEntry, setEditEntry] = useState(null);
@@ -167,96 +184,132 @@ const Weight = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <div className="flex flex-1 w-full max-w-7xl mx-auto py-8 px-4 gap-8">
-        {/* Removed absolute Back to Tracker button, now placed inline above */}
-        {/* Sidebar for providers */}
-        {isProvider && (
-          <aside className="w-64 bg-white rounded-lg shadow p-4 h-fit self-start">
-            <h2 className="font-bold text-lg mb-4">Connected Baby Profiles</h2>
-            {/* Search input for filtering connected profiles */}
-            <div className="mb-2">
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Search by parent or baby name..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                disabled={loadingProfiles || connectedProfiles.length === 0}
-              />
-            </div>
-            {/* Dropdown for selecting profile */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Select Baby Profile</label>
-              <select
-                className="w-full border rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={selectedProfileId || ""}
-                onChange={e => handleProfileSelect(e.target.value)}
-                disabled={loadingProfiles || filteredProfiles.length === 0}
-              >
-                <option value="" disabled>
-                  {loadingProfiles
-                    ? "Loading..."
-                    : filteredProfiles.length === 0
-                    ? "No connected profiles"
-                    : "Select a profile"}
-                </option>
-                {filteredProfiles.map(profile => (
-                  <option key={profile._id} value={profile._id}>
-                    {profile.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {/* Show selected profile info */}
-            {selectedProfileId && (
-              <div className="flex items-center gap-3 p-2 bg-blue-50 rounded mb-2">
-                <div>
-                  <div className="font-semibold">
-                    {filteredProfiles.find(p => p._id === selectedProfileId)?.fullName}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {filteredProfiles.find(p => p._id === selectedProfileId)?.babyDetails?.gender}
-                  </div>
-                </div>
-              </div>
-            )}
-          </aside>
-        )}
         {/* Main content */}
         <main className="flex-1 flex flex-col gap-6">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-2xl font-bold">Weight Tracking</h1>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/tracker")}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 shadow transition"
-              >
-                <span style={{fontSize: '1.2em'}}>&larr;</span> Back to Tracker
-              </button>
-              <button
-                className={`px-4 py-2 rounded font-medium border transition ${
-                  showWHO
-                    ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
-                    : "bg-white text-blue-600 border-blue-600 hover:bg-blue-50"
-                }`}
-                onClick={() => setShowWHO((v) => !v)}
-              >
-                {showWHO ? "Hide WHO Standard" : "Compare with WHO Standard"}
-              </button>
+          {/* Top header and profile selection */}
+          <div className="bg-white rounded-xl shadow-sm ring-1 ring-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Scale className="w-6 h-6 text-white" />
+                <h1 className="text-white text-xl font-semibold">Weight Tracking</h1>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate("/tracker")}
+                  className="px-3 py-1.5 rounded-md bg-white/10 text-white hover:bg-white/20 text-sm"
+                >
+                  Back to Tracker
+                </button>
+              </div>
+            </div>
+            <div className="p-4 flex flex-col md:flex-row md:items-end gap-3">
+              {isProvider ? (
+                <>
+                  <div className="flex-1">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1"><Users className="w-4 h-4 text-indigo-600" />Connected Baby Profiles</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="flex-1 border rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        placeholder="Search by parent or baby name..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        disabled={loadingProfiles || connectedProfiles.length === 0}
+                      />
+                      <select
+                        className="w-64 border rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        value={selectedProfileId || ""}
+                        onChange={e => handleProfileSelect(e.target.value)}
+                        disabled={loadingProfiles || filteredProfiles.length === 0}
+                      >
+                        <option value="" disabled>
+                          {loadingProfiles
+                            ? "Loading..."
+                            : filteredProfiles.length === 0
+                            ? "No connected profiles"
+                            : "Select a profile"}
+                        </option>
+                        {filteredProfiles.map(profile => (
+                          <option key={profile._id} value={profile._id}>
+                            {profile.fullName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {selectedProfileId && (
+                      <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded bg-indigo-50 text-indigo-700 text-sm">
+                        <Baby className="w-4 h-4" />
+                        {filteredProfiles.find(p => p._id === selectedProfileId)?.babyDetails?.fullName || filteredProfiles.find(p => p._id === selectedProfileId)?.fullName}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-indigo-50 text-indigo-700 text-sm">
+                    <Baby className="w-4 h-4" />
+                    {user?.babyDetails?.fullName || user?.fullName}
+                  </div>
+                </div>
+              )}
+              <div className="flex items-end gap-2">
+                <button
+                  className={`px-4 py-2 rounded font-medium border text-sm flex items-center gap-2 ${
+                    showWHOOverlay
+                      ? "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
+                      : "bg-white text-indigo-600 border-indigo-600 hover:bg-indigo-50"
+                  }`}
+                  onClick={() => setShowWHOOverlay((v) => !v)}
+                >
+                  <ImageIcon className="w-4 h-4" /> {showWHOOverlay ? "Hide WHO Chart" : "Show WHO Chart Overlay"}
+                </button>
+              </div>
             </div>
           </div>
-          {/* Graph */}
-          <section className="bg-white rounded-lg shadow p-6">
+
+          {/* Graph with WHO overlay image */}
+          <section className="bg-white rounded-lg shadow p-6 relative" ref={chartContainerRef}>
             {loadingWeights ? (
               <Loader />
             ) : weightsError ? (
               <div className="text-red-500">Error loading weight data</div>
             ) : (
-              <WHOGraph
-                key={`${selectedProfileId}-${entries.length}-${JSON.stringify(entries.map(e => e._id))}`}
-                entries={entries}
-                babyProfile={babyProfile || (isParent ? user : null)}
-                showWHO={showWHO}
-              />
+              <>
+                <WHOGraph
+                  key={`${selectedProfileId}-${entries.length}-${JSON.stringify(entries.map(e => e._id))}`}
+                  entries={entries}
+                  babyProfile={babyProfile || (isParent ? user : null)}
+                  showWHO={false}
+                  showLegend={false}
+                />
+                {showWHOOverlay && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: OVERLAY_CONFIG.topOffsetPx,
+                      left: `calc(50% + ${OVERLAY_CONFIG.leftOffsetPx}px)`,
+                      transform: `translateX(-50%) scale(${OVERLAY_CONFIG.scale})`,
+                      width: overlaySize.width,
+                      height: overlaySize.height,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <img
+                      src={whoChartImg}
+                      alt="WHO Standard Chart Overlay"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        opacity: OVERLAY_CONFIG.opacity,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </section>
           
@@ -465,6 +518,7 @@ function WeightEntryForm({ initial, onSubmit, onCancel }) {
 WeightEntryForm.propTypes = {
   initial: PropTypes.shape({
     weight: PropTypes.number,
+  ageInMonths: PropTypes.number,
     dateRecorded: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
     notes: PropTypes.string,
     _id: PropTypes.string,
