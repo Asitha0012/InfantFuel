@@ -17,6 +17,7 @@ import weightRoutes from "./routes/weightRoutes.js";
 import vaccinationRoutes from "./routes/vaccinationRoutes.js";
 import medicationRoutes from "./routes/medicationRoutes.js";
 import heightRoutes from "./routes/heightRoutes.js";
+import headCircumferenceRoutes from "./routes/headCircumferenceRoutes.js";
 
 
 
@@ -43,6 +44,7 @@ app.use("/api/ai-chat", aiChatRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/weights", weightRoutes);
 app.use("/api/v1/heights", heightRoutes);
+app.use("/api/v1/head-circumference", headCircumferenceRoutes);
 app.use("/api/v1/vaccinations", vaccinationRoutes);
 app.use("/api/v1/medications", medicationRoutes);
 const __dirname = path.resolve();

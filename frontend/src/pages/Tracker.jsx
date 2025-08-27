@@ -225,7 +225,7 @@ const Tracker = () => {
             <section title="height" onClick={() => navigate('/height-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={Ruler} label="Height" />
             </section>
-            <section title="vaccine" onClick={() => navigate('/growth-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+            <section title="head-circ" onClick={() => navigate('/head-circumference-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={CircleDot} label="Head circumference" />
             </section>
             </div>
