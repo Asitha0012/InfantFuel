@@ -105,3 +105,47 @@ export function interpolateWHOHeightData(ageInMonths, gender = "boys") {
   });
   return interp;
 }
+
+// Minimal WHO Head circumference-for-age standards (cm) — placeholder values
+const WHO_HEAD_CIRC_STANDARDS = {
+  boys: [
+    // { age: months, P3: cm, P15: cm, P50: cm, P85: cm, P97: cm }
+    { age: 0, P3: 31.9, P15: 33.0, P50: 34.5, P85: 36.0, P97: 37.0 },
+    { age: 1, P3: 34.1, P15: 35.2, P50: 36.5, P85: 38.1, P97: 39.2 },
+    { age: 2, P3: 35.6, P15: 36.7, P50: 38.0, P85: 39.6, P97: 40.8 },
+    { age: 3, P3: 36.6, P15: 37.7, P50: 39.0, P85: 40.6, P97: 41.8 },
+    { age: 4, P3: 37.3, P15: 38.4, P50: 39.7, P85: 41.3, P97: 42.5 },
+    { age: 5, P3: 37.9, P15: 39.0, P50: 40.3, P85: 41.8, P97: 43.0 },
+    { age: 6, P3: 38.3, P15: 39.4, P50: 40.7, P85: 42.2, P97: 43.4 },
+  ],
+  girls: [
+    { age: 0, P3: 31.5, P15: 32.6, P50: 34.0, P85: 35.5, P97: 36.5 },
+    { age: 1, P3: 33.6, P15: 34.6, P50: 35.9, P85: 37.4, P97: 38.4 },
+    { age: 2, P3: 35.0, P15: 36.0, P50: 37.2, P85: 38.7, P97: 39.7 },
+    { age: 3, P3: 36.0, P15: 37.0, P50: 38.1, P85: 39.6, P97: 40.6 },
+    { age: 4, P3: 36.7, P15: 37.7, P50: 38.8, P85: 40.3, P97: 41.3 },
+    { age: 5, P3: 37.2, P15: 38.2, P50: 39.3, P85: 40.8, P97: 41.8 },
+    { age: 6, P3: 37.6, P15: 38.6, P50: 39.7, P85: 41.2, P97: 42.1 },
+  ],
+};
+
+export function interpolateWHOHeadCircData(ageInMonths, gender = "boys") {
+  const data = WHO_HEAD_CIRC_STANDARDS[gender] || WHO_HEAD_CIRC_STANDARDS.boys;
+  if (!data || data.length === 0) return null;
+  let lower = data[0];
+  let upper = data[data.length - 1];
+  for (let i = 0; i < data.length - 1; i++) {
+    if (ageInMonths >= data[i].age && ageInMonths <= data[i + 1].age) {
+      lower = data[i];
+      upper = data[i + 1];
+      break;
+    }
+  }
+  if (lower.age === upper.age) return lower;
+  const t = (ageInMonths - lower.age) / (upper.age - lower.age);
+  const interp = {};
+  ["P3", "P15", "P50", "P85", "P97"].forEach((key) => {
+    interp[key] = lower[key] + t * (upper[key] - lower[key]);
+  });
+  return interp;
+}
