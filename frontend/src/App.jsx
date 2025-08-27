@@ -19,6 +19,7 @@ import Nutrition from './pages/nutrition';
 import Nutrifluid from './pages/nutrifluid';
 import Nutrisolid from './pages/nutrisolid';
 import Weight from './pages/Tracker/Weight';
+import Height from './pages/Tracker/Height';
 import PrivateRoute from './pages/Auth/PrivateRoute';
 
 const App = () => {
@@ -46,6 +47,7 @@ const App = () => {
           <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
           <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
           <Route path="/weight-tracking" element={<Weight />} />
+          <Route path="/height-tracking" element={<Height />} />
           <Route path="/growth-tracking" element={<Weight />} />
           <Route path="/parentprofile" element={<ProfileParent />} />
           <Route path="/Profilehealth" element={<Profilehealth />} />

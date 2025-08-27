@@ -61,3 +61,47 @@ export function calculateAgeInMonths(dob, date) {
   const fraction = (d.getDate() - birth.getDate() + daysInMonth) % daysInMonth / daysInMonth;
   return +(months + fraction).toFixed(2);
 }
+
+// Minimal WHO Height-for-age standards (cm) — placeholder values; extend for production
+const WHO_HEIGHT_STANDARDS = {
+  boys: [
+    // { age: months, P3: cm, P15: cm, P50: cm, P85: cm, P97: cm }
+    { age: 0, P3: 46.3, P15: 48.0, P50: 49.9, P85: 51.8, P97: 53.4 },
+    { age: 1, P3: 51.1, P15: 52.8, P50: 54.7, P85: 56.6, P97: 58.3 },
+    { age: 2, P3: 54.6, P15: 56.4, P50: 58.4, P85: 60.4, P97: 62.1 },
+    { age: 3, P3: 57.3, P15: 59.2, P50: 61.4, P85: 63.5, P97: 65.3 },
+    { age: 4, P3: 59.7, P15: 61.7, P50: 63.9, P85: 66.1, P97: 68.0 },
+    { age: 5, P3: 61.7, P15: 63.8, P50: 66.0, P85: 68.4, P97: 70.4 },
+    { age: 6, P3: 63.3, P15: 65.5, P50: 67.6, P85: 70.1, P97: 72.2 },
+  ],
+  girls: [
+    { age: 0, P3: 45.6, P15: 47.3, P50: 49.1, P85: 51.1, P97: 52.7 },
+    { age: 1, P3: 50.0, P15: 51.7, P50: 53.7, P85: 55.7, P97: 57.4 },
+    { age: 2, P3: 53.2, P15: 55.0, P50: 57.1, P85: 59.2, P97: 60.9 },
+    { age: 3, P3: 55.8, P15: 57.7, P50: 59.8, P85: 61.9, P97: 63.7 },
+    { age: 4, P3: 58.0, P15: 60.0, P50: 62.1, P85: 64.3, P97: 66.1 },
+    { age: 5, P3: 60.0, P15: 62.0, P50: 64.0, P85: 66.3, P97: 68.1 },
+    { age: 6, P3: 61.6, P15: 63.7, P50: 65.6, P85: 68.0, P97: 69.8 },
+  ],
+};
+
+export function interpolateWHOHeightData(ageInMonths, gender = "boys") {
+  const data = WHO_HEIGHT_STANDARDS[gender] || WHO_HEIGHT_STANDARDS.boys;
+  if (!data || data.length === 0) return null;
+  let lower = data[0];
+  let upper = data[data.length - 1];
+  for (let i = 0; i < data.length - 1; i++) {
+    if (ageInMonths >= data[i].age && ageInMonths <= data[i + 1].age) {
+      lower = data[i];
+      upper = data[i + 1];
+      break;
+    }
+  }
+  if (lower.age === upper.age) return lower;
+  const t = (ageInMonths - lower.age) / (upper.age - lower.age);
+  const interp = {};
+  ["P3", "P15", "P50", "P85", "P97"].forEach((key) => {
+    interp[key] = lower[key] + t * (upper[key] - lower[key]);
+  });
+  return interp;
+}

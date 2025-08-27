@@ -193,12 +193,10 @@ const EmptyGraph = ({ showWHO }) => {
   // Create empty 60-month timeline for boys (default)
   const emptyTimeline = [];
   for (let month = 0; month <= 60; month++) {
-    const monthLabel = month === 0 ? "Birth" : `${month}m`;
     const whoData = interpolateWHOData(month, "boys") || {};
     
     emptyTimeline.push({
       month,
-      monthLabel,
       whoP3: showWHO && whoData.P3 != null ? whoData.P3 : null,
       whoP15: showWHO && whoData.P15 != null ? whoData.P15 : null,
       whoP50: showWHO && whoData.P50 != null ? whoData.P50 : null,
@@ -217,14 +215,7 @@ const EmptyGraph = ({ showWHO }) => {
           key={`empty-${showWHO}`} // Force re-render when showWHO changes
         >
           <CartesianGrid strokeDasharray="1 0" stroke="#e5e7eb" vertical={false} horizontal={true} />
-          <XAxis
-            dataKey="monthLabel"
-            tick={{ fontSize: 10 }}
-            angle={-45}
-            textAnchor="end"
-            height={80}
-            interval={2}
-          />
+          <XAxis dataKey="month" type="number" domain={[0, 60]} tickFormatter={(v) => (v === 0 ? "Birth" : `${Math.round(v)}m`)} tick={{ fontSize: 10 }} height={80} interval={2} />
           <YAxis
             label={{ value: "Weight (kg)", angle: -90, position: "insideLeft" }}
             domain={[0, 25]}
