@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetVaccinationsQuery, useCreateVaccinationMutation } from "../redux/api/vaccinations";
@@ -35,6 +35,7 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
     date: "",
     notes: ""
   });
+  const [feedback, setFeedback] = useState({ type: "", message: "" }); // success | error
 
   const vaccineList = [
     "BCG (Bacille Calmette-Guerin)",
@@ -70,7 +71,7 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
     e.preventDefault();
 
     if (viewMode === "nurse" && (!form.parentId || !form.childName)) {
-      alert("Please select a parent and ensure child name is available");
+  setFeedback({ type: "error", message: "Please select a parent and ensure child name is available." });
       return;
     }
 
@@ -94,16 +95,16 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
     );
 
     if (isDuplicate) {
-      alert("Duplicate record for this child, vaccine, and date.");
+      setFeedback({ type: "error", message: "Duplicate record for this child, vaccine, and date." });
       return;
     }
 
     try {
       const response = await createVaccination(record).unwrap();
       if (response) {
-        alert("Vaccination record saved successfully!");
+        setFeedback({ type: "success", message: "Vaccination record saved successfully." });
         // refetch to update local list
-        refetch();
+        await refetch();
         setForm({
           parentId: "",
           parentName: "",
@@ -116,7 +117,7 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
       }
     } catch (err) {
       console.error('Error saving vaccination record:', err);
-      alert(err?.data?.message || "Failed to save record. Please check all fields and try again.");
+      setFeedback({ type: "error", message: err?.data?.message || "Failed to save record. Please check all fields and try again." });
     }
   };
 
@@ -306,9 +307,29 @@ const connectedParents = rawParents.filter(parent => parent.userType === "parent
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                     }`}
+                    aria-busy={isCreating}
                   >
-                    {isCreating ? "Recording..." : "Record Vaccination"}
+                    {isCreating ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-block h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                        Recording...
+                      </span>
+                    ) : (
+                      "Record Vaccination"
+                    )}
                   </button>
+
+                  {feedback.message && (
+                    <div
+                      className={`mt-3 px-3 py-2 rounded text-sm ${
+                        feedback.type === 'success'
+                          ? 'bg-green-50 text-green-700 border border-green-200'
+                          : 'bg-red-50 text-red-700 border border-red-200'
+                      }`}
+                    >
+                      {feedback.message}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
