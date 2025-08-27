@@ -11,6 +11,9 @@ import {
 import PropTypes from "prop-types";
 import { interpolateWHOData, calculateAgeInMonths } from "../utils/whoGrowthData";
 
+// Configure Y-axis tick spacing (kg). Keep 1kg ticks; increase overall chart height to widen gaps.
+const Y_TICK_STEP = 1; // 1kg per tick
+
 /**
  * WHOGraph - A comprehensive weight tracking graph for baby profiles.
  * Shows actual weight entries, best fit line, and WHO standard percentiles.
@@ -21,20 +24,26 @@ import { interpolateWHOData, calculateAgeInMonths } from "../utils/whoGrowthData
  *   entries: [{ weight, dateRecorded, notes, _id, recordedBy }]
  *   babyProfile: { babyDetails: { dateOfBirth, gender } }
  *   showWHO: boolean (show/hide WHO overlay)
+ *   showLegend: boolean (show/hide legend labels)
+ *   height: number (chart height in pixels; increases vertical gap between kg)
  */
 const WHOGraph = ({
   entries = [],
   babyProfile = {},
-  showWHO = true
+  showWHO = true,
+  showLegend = true,
+  height = 900,
 }) => {
   if (!babyProfile?.babyDetails || !babyProfile.babyDetails.gender || !babyProfile.babyDetails.dateOfBirth) {
     // Show empty graph with fixed scale even without baby profile
-    return <EmptyGraph showWHO={showWHO} />;
+  return <EmptyGraph showWHO={showWHO} showLegend={showLegend} height={height} />;
   }
   
   const genderRaw = babyProfile.babyDetails.gender;
   const gender = typeof genderRaw === "string" ? genderRaw.toLowerCase() : "";
   const dob = babyProfile.babyDetails.dateOfBirth;
+  // Precompute Y-axis ticks based on step
+  const yTicks = Array.from({ length: Math.floor(30 / Y_TICK_STEP) + 1 }, (_, i) => i * Y_TICK_STEP);
 
   // Create fixed 60-month timeline (5 years)
   const fixedTimeline = [];
@@ -57,7 +66,7 @@ const WHOGraph = ({
   // Map actual entries to the timeline (one per month, latest by date)
   const monthToEntry = {};
   entries
-    .filter(entry => entry && entry.dateRecorded && typeof entry.weight === "number" && entry.weight > 0 && entry.weight <= 25)
+    .filter(entry => entry && entry.dateRecorded && typeof entry.weight === "number" && entry.weight > 0 && entry.weight <= 30)
     .forEach(entry => {
       const entryDate = new Date(entry.dateRecorded);
       const ageInMonths = Math.round(calculateAgeInMonths(dob, entryDate));
@@ -92,7 +101,7 @@ const WHOGraph = ({
   // Debug: Log data for troubleshooting
   console.log('WHO Graph Debug:', {
     totalEntries: entries.length,
-    validEntries: entries.filter(entry => entry && entry.dateRecorded && typeof entry.weight === "number" && entry.weight > 0 && entry.weight <= 25).length,
+  validEntries: entries.filter(entry => entry && entry.dateRecorded && typeof entry.weight === "number" && entry.weight > 0 && entry.weight <= 30).length,
     timelineWithData: fixedTimeline.filter(t => t.weight !== null).length,
     babyProfile: babyProfile?.fullName || 'No profile'
   });
@@ -131,7 +140,7 @@ const WHOGraph = ({
   };
 
   return (
-    <div className="h-[700px] w-full"> {/* Increased height from 500px to 700px */}
+    <div className="w-full" style={{ height: `${height}px` }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart 
           data={fixedTimeline} 
@@ -149,12 +158,12 @@ const WHOGraph = ({
           />
           <YAxis
             label={{ value: "Weight (kg)", angle: -90, position: "insideLeft" }}
-            domain={[0, 25]} // Fixed scale from 0 to 25kg
+            domain={[0, 26]} // Fixed scale from 0 to 26kg
             type="number"
             allowDataOverflow={false}
-            ticks={[...Array(26).keys()]} // 0, 1, 2, ..., 25
+            ticks={yTicks} // 0, step, ..., 26
             tick={{ fontSize: 12 }}
-            tickCount={26}
+            tickCount={yTicks.length}
             interval={0}
             axisLine={{ stroke: '#e5e7eb' }}
             minTickGap={0}
@@ -163,7 +172,7 @@ const WHOGraph = ({
             allowDuplicatedCategory={false}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          {showLegend && <Legend />}
 
           {/* WHO Percentile Lines: always render, but hide with opacity if showWHO is false */}
           <Line type="linear" dataKey="whoP3" stroke="#ef4444" strokeWidth={1} strokeDasharray="5 5" dot={false} name="WHO 3rd Percentile" connectNulls={false} opacity={showWHO ? 1 : 0} isAnimationActive={false} />
@@ -189,9 +198,11 @@ const WHOGraph = ({
 };
 
 // EmptyGraph component for when no baby profile is available
-const EmptyGraph = ({ showWHO }) => {
+const EmptyGraph = ({ showWHO, showLegend = true, height = 400 }) => {
   // Create empty 60-month timeline for boys (default)
   const emptyTimeline = [];
+  // Precompute Y-axis ticks based on step
+  const yTicks = Array.from({ length: Math.floor(26 / Y_TICK_STEP) + 1 }, (_, i) => i * Y_TICK_STEP);
   for (let month = 0; month <= 60; month++) {
     const monthLabel = month === 0 ? "Birth" : `${month}m`;
     const whoData = interpolateWHOData(month, "boys") || {};
@@ -209,7 +220,7 @@ const EmptyGraph = ({ showWHO }) => {
   }
 
   return (
-    <div className="h-[700px] w-full"> {/* Increased height from 500px to 700px */}
+    <div className="w-full" style={{ height: `${height}px` }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart 
           data={emptyTimeline} 
@@ -227,12 +238,12 @@ const EmptyGraph = ({ showWHO }) => {
           />
           <YAxis
             label={{ value: "Weight (kg)", angle: -90, position: "insideLeft" }}
-            domain={[0, 25]}
+            domain={[0, 30]}
             type="number"
             allowDataOverflow={false}
-            ticks={[...Array(26).keys()]}
+            ticks={yTicks}
             tick={{ fontSize: 12 }}
-            tickCount={26}
+            tickCount={yTicks.length}
             interval={0}
             axisLine={{ stroke: '#e5e7eb' }}
             minTickGap={0}
@@ -240,7 +251,7 @@ const EmptyGraph = ({ showWHO }) => {
             includeHidden={true}
             allowDuplicatedCategory={false}
           />
-          <Legend />
+          {showLegend && <Legend />}
 
           {/* WHO Percentile Lines: always render, but hide with opacity if showWHO is false */}
           <Line type="linear" dataKey="whoP3" stroke="#ef4444" strokeWidth={1} strokeDasharray="5 5" dot={false} name="WHO 3rd Percentile" connectNulls={false} opacity={showWHO ? 1 : 0} isAnimationActive={false} />
@@ -255,13 +266,17 @@ const EmptyGraph = ({ showWHO }) => {
 };
 
 EmptyGraph.propTypes = {
-  showWHO: PropTypes.bool
+  showWHO: PropTypes.bool,
+  showLegend: PropTypes.bool,
+  height: PropTypes.number,
 };
 
 WHOGraph.propTypes = {
   entries: PropTypes.array,
   babyProfile: PropTypes.object,
-  showWHO: PropTypes.bool
+  showWHO: PropTypes.bool,
+  showLegend: PropTypes.bool,
+  height: PropTypes.number,
 };
 
 export default WHOGraph;
