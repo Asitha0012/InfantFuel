@@ -83,6 +83,10 @@ const Weight = () => {
   const [updateWeightEntry] = useUpdateWeightEntryMutation();
   const [deleteWeightEntry] = useDeleteWeightEntryMutation();
 
+  // Inline delete confirmation state
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
   // Handlers
   const handleProfileSelect = (id) => {
     setSelectedProfileId(id);
@@ -90,28 +94,36 @@ const Weight = () => {
   };
 
   const handleEdit = (entry) => {
+    // Cancel any pending delete confirmation when editing
+    setPendingDeleteId(null);
     setEditEntry(entry);
   };
 
-  const handleDelete = async (entry) => {
-    // Custom confirmation dialog
-    const confirmed = window.confirm(
-      `Are you sure you want to delete this weight entry?\n\nWeight: ${entry.weight}kg\nDate: ${new Date(entry.dateRecorded).toLocaleDateString()}\n${entry.notes ? `Notes: ${entry.notes}` : ''}`
-    );
-    
-    if (confirmed) {
-      try {
-        await deleteWeightEntry({ babyId: selectedProfileId, entryId: entry._id });
-        refetch();
-      } catch (err) {
-        // Show error notification
-        if (typeof window !== 'undefined' && window.alert) {
-          window.alert('Failed to delete weight entry. Please try again.');
-        }
-        console.error('Delete error:', err);
+  // Start inline delete confirmation UI
+  const handleRequestDelete = (entry) => {
+    setEditEntry(null);
+    setPendingDeleteId(entry._id);
+  };
+
+  // Confirm deletion
+  const handleConfirmDelete = async (entryId) => {
+    setDeletingId(entryId);
+    try {
+      await deleteWeightEntry({ babyId: selectedProfileId, entryId });
+      await refetch();
+    } catch (err) {
+      if (typeof window !== 'undefined' && window.alert) {
+        window.alert('Failed to delete weight entry. Please try again.');
       }
+      console.error('Delete error:', err);
+    } finally {
+      setDeletingId(null);
+      setPendingDeleteId(null);
     }
   };
+
+  // Cancel deletion
+  const handleCancelDelete = () => setPendingDeleteId(null);
 
   const handleModalSubmit = async (form) => {
     // Validate weight range
@@ -355,31 +367,52 @@ const Weight = () => {
                         <td className="px-4 py-2">{entry.notes || "-"}</td>
                         <td className="px-4 py-2">{entry.recordedBy?.fullName || "-"}</td>
                         {isProvider && (
-                          <td className="px-4 py-2 flex gap-2">
-                            <button
-                              className="text-blue-600 hover:underline"
-                              onClick={() => handleEdit(entry)}
-                              disabled={entry.recordedBy?._id !== user._id}
-                              title={
-                                entry.recordedBy?._id !== user._id
-                                  ? "You can only edit your own entries"
-                                  : "Edit"
-                              }
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="text-red-600 hover:underline"
-                              onClick={() => handleDelete(entry)}
-                              disabled={entry.recordedBy?._id !== user._id}
-                              title={
-                                entry.recordedBy?._id !== user._id
-                                  ? "You can only delete your own entries"
-                                  : "Delete"
-                              }
-                            >
-                              Delete
-                            </button>
+                          <td className="px-4 py-2">
+                            {pendingDeleteId === entry._id ? (
+                              <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-red-50 border border-red-200">
+                                <span className="text-red-700 text-xs font-medium">Delete?</span>
+                                <button
+                                  className="px-2 py-0.5 text-xs rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                                  onClick={() => handleConfirmDelete(entry._id)}
+                                  disabled={deletingId === entry._id}
+                                >
+                                  {deletingId === entry._id ? 'Deleting...' : 'Yes'}
+                                </button>
+                                <button
+                                  className="px-2 py-0.5 text-xs rounded bg-gray-200 hover:bg-gray-300"
+                                  onClick={handleCancelDelete}
+                                >
+                                  No
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-2">
+                                <button
+                                  className="text-blue-600 hover:underline"
+                                  onClick={() => handleEdit(entry)}
+                                  disabled={entry.recordedBy?._id !== user._id}
+                                  title={
+                                    entry.recordedBy?._id !== user._id
+                                      ? "You can only edit your own entries"
+                                      : "Edit"
+                                  }
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="text-red-600 hover:underline"
+                                  onClick={() => handleRequestDelete(entry)}
+                                  disabled={entry.recordedBy?._id !== user._id}
+                                  title={
+                                    entry.recordedBy?._id !== user._id
+                                      ? "You can only delete your own entries"
+                                      : "Delete"
+                                  }
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
                           </td>
                         )}
                       </tr>
