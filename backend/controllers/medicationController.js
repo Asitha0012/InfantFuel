@@ -66,7 +66,7 @@ const createMedication = async (req, res) => {
 
 // Get medications
 // - Parents see their own records
-// - Providers see records they created
+// - Providers see records for all connected patients
 const getMedications = async (req, res) => {
   try {
     if (!req.user.isAdmin) {
@@ -74,7 +74,26 @@ const getMedications = async (req, res) => {
       return res.json(records);
     }
 
-    const records = await Medication.find({ "createdBy.userId": req.user._id }).sort({ date: -1 });
+    // Provider: show records for all connected patients
+    // First, get all accepted connections where this provider is involved
+    const connections = await Connection.find({
+      $or: [
+        { from: req.user._id, status: "accepted" },
+        { to: req.user._id, status: "accepted" }
+      ]
+    });
+
+    // Extract parent IDs from connections
+    const connectedParentIds = connections.map(conn => {
+      // Return the other party's ID (the parent)
+      return conn.from.toString() === req.user._id.toString() ? conn.to : conn.from;
+    });
+
+    // Get all medication records for connected parents
+    const records = await Medication.find({ 
+      parentId: { $in: connectedParentIds } 
+    }).sort({ date: -1 });
+    
     res.json(records);
   } catch (error) {
     res.status(500).json({ message: error.message });

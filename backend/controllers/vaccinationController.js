@@ -53,7 +53,7 @@ const createVaccination = async (req, res) => {
   }
 };
 
-// Get vaccinations: parents see their records, providers see records they created
+// Get vaccinations: parents see their records, providers see records for all connected patients
 const getVaccinations = async (req, res) => {
   try {
     if (!req.user.isAdmin) {
@@ -62,9 +62,25 @@ const getVaccinations = async (req, res) => {
       return res.json(records);
     }
 
-    // Provider: show records they created
-    const records = await Vaccination.find({ "createdBy.userId": req.user._id })
-      .sort({ date: -1 });
+    // Provider: show records for all connected patients
+    // First, get all accepted connections where this provider is involved
+    const connections = await Connection.find({
+      $or: [
+        { from: req.user._id, status: "accepted" },
+        { to: req.user._id, status: "accepted" }
+      ]
+    });
+
+    // Extract parent IDs from connections
+    const connectedParentIds = connections.map(conn => {
+      // Return the other party's ID (the parent)
+      return conn.from.toString() === req.user._id.toString() ? conn.to : conn.from;
+    });
+
+    // Get all vaccination records for connected parents
+    const records = await Vaccination.find({ 
+      parentId: { $in: connectedParentIds } 
+    }).sort({ date: -1 });
     
     res.json(records);
   } catch (error) {

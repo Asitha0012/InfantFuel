@@ -520,7 +520,7 @@ const ProfessionalVaccinationUI = () => {
                         <Shield className="h-8 w-8 text-teal-600" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                        Your Child's Immunization History
+                        Your Child&apos;s Immunization History
                       </h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">
                         This page displays all vaccination records for your child as recorded by healthcare providers. 
