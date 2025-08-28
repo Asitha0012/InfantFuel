@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetVaccinationsQuery, useCreateVaccinationMutation } from "../redux/api/vaccinations";
 import { useGetParentsQuery } from "../redux/api/users";
-import { Syringe, Calendar, User, FileText, Shield, Clock, CheckCircle, Search, ArrowLeft } from 'lucide-react';
+import { Syringe, Calendar, User, FileText, Shield, Clock, CheckCircle, Search, ArrowLeft, Eye } from 'lucide-react';
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 
@@ -209,8 +209,12 @@ const ProfessionalVaccinationUI = () => {
                 <Shield className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold">Vaccination Management</h1>
-                <p className="text-indigo-100">Professional healthcare system</p>
+                <h1 className="text-3xl font-bold">
+                  {viewMode === "parent" ? "My Child's Vaccination Records" : "Vaccination Management"}
+                </h1>
+                <p className="text-indigo-100">
+                  {viewMode === "parent" ? "View your child's immunization history" : "Professional healthcare system"}
+                </p>
               </div>
             </div>
             
@@ -364,142 +368,180 @@ const ProfessionalVaccinationUI = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className={`grid grid-cols-1 ${viewMode === "nurse" ? "lg:grid-cols-3" : "lg:grid-cols-4"} gap-8`}>
               
-              {/* Vaccination Form */}
-              <div className="lg:col-span-2">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
-                    <div className="flex items-center space-x-3">
-                      <Syringe className="h-6 w-6 text-white" />
-                      <h2 className="text-xl font-semibold text-white">Record New Vaccination</h2>
+              {/* Vaccination Form - Only for Healthcare Providers */}
+              {viewMode === "nurse" && (
+                <div className="lg:col-span-2">
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <Syringe className="h-6 w-6 text-white" />
+                        <h2 className="text-xl font-semibold text-white">Record New Vaccination</h2>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="p-6 space-y-6">
-                    {/* Child Name (Editable if not set) */}
-                    {!selectedParent.babyDetails?.fullName && (
+                    
+                    <div className="p-6 space-y-6">
+                      {/* Child Name (Editable if not set) */}
+                      {!selectedParent.babyDetails?.fullName && (
+                        <div className="space-y-2">
+                          <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                            <User className="h-4 w-4" />
+                            <span>Child Name</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="childName"
+                            value={form.childName}
+                            onChange={handleChange}
+                            placeholder="Enter child's full name"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            required
+                          />
+                        </div>
+                      )}
+
+                      {/* Vaccine Selection */}
                       <div className="space-y-2">
                         <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                          <User className="h-4 w-4" />
-                          <span>Child Name</span>
+                          <Shield className="h-4 w-4" />
+                          <span>Vaccine Type</span>
+                        </label>
+                        <select
+                          name="vaccineName"
+                          value={form.vaccineName}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          required
+                        >
+                          <option value="">Select vaccine from approved list</option>
+                          {vaccineList.map((vaccine, idx) => (
+                            <option key={idx} value={vaccine}>
+                              {vaccine}
+                            </option>
+                          ))}
+                          <option value="Other">Other (specify below)</option>
+                        </select>
+
+                        {form.vaccineName === "Other" && (
+                          <input
+                            type="text"
+                            name="customVaccine"
+                            value={form.customVaccine}
+                            onChange={handleChange}
+                            placeholder="Enter custom vaccine name"
+                            className="w-full mt-3 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            required
+                          />
+                        )}
+                      </div>
+
+                      {/* Date Selection */}
+                      <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                          <Calendar className="h-4 w-4" />
+                          <span>Vaccination Date</span>
                         </label>
                         <input
-                          type="text"
-                          name="childName"
-                          value={form.childName}
+                          type="date"
+                          name="date"
+                          value={form.date}
                           onChange={handleChange}
-                          placeholder="Enter child's full name"
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                           required
                         />
                       </div>
-                    )}
 
-                    {/* Vaccine Selection */}
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                        <Shield className="h-4 w-4" />
-                        <span>Vaccine Type</span>
-                      </label>
-                      <select
-                        name="vaccineName"
-                        value={form.vaccineName}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        required
-                      >
-                        <option value="">Select vaccine from approved list</option>
-                        {vaccineList.map((vaccine, idx) => (
-                          <option key={idx} value={vaccine}>
-                            {vaccine}
-                          </option>
-                        ))}
-                        <option value="Other">Other (specify below)</option>
-                      </select>
-
-                      {form.vaccineName === "Other" && (
-                        <input
-                          type="text"
-                          name="customVaccine"
-                          value={form.customVaccine}
+                      {/* Notes */}
+                      <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                          <FileText className="h-4 w-4" />
+                          <span>Clinical Notes</span>
+                        </label>
+                        <textarea
+                          name="notes"
+                          value={form.notes}
                           onChange={handleChange}
-                          placeholder="Enter custom vaccine name"
-                          className="w-full mt-3 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          required
+                          placeholder="Enter any observations, reactions, or additional notes..."
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all h-24 resize-none"
                         />
-                      )}
-                    </div>
-
-                    {/* Date Selection */}
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                        <Calendar className="h-4 w-4" />
-                        <span>Vaccination Date</span>
-                      </label>
-                      <input
-                        type="date"
-                        name="date"
-                        value={form.date}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        required
-                      />
-                    </div>
-
-                    {/* Notes */}
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                        <FileText className="h-4 w-4" />
-                        <span>Clinical Notes</span>
-                      </label>
-                      <textarea
-                        name="notes"
-                        value={form.notes}
-                        onChange={handleChange}
-                        placeholder="Enter any observations, reactions, or additional notes..."
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all h-24 resize-none"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={!form.childName || isCreating}
-                      className={`w-full px-6 py-3 rounded-lg font-medium transition-all ${
-                        !form.childName || isCreating
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                      }`}
-                      aria-busy={isCreating}
-                    >
-                      {isCreating ? (
-                        <span className="inline-flex items-center gap-2">
-                          <span className="inline-block h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
-                          Recording...
-                        </span>
-                      ) : (
-                        "Record Vaccination"
-                      )}
-                    </button>
-
-                    {feedback.message && (
-                      <div
-                        className={`mt-3 px-3 py-2 rounded text-sm ${
-                          feedback.type === 'success'
-                            ? 'bg-green-50 text-green-700 border border-green-200'
-                            : 'bg-red-50 text-red-700 border border-red-200'
-                        }`}
-                      >
-                        {feedback.message}
                       </div>
-                    )}
+
+                      <button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={!form.childName || isCreating}
+                        className={`w-full px-6 py-3 rounded-lg font-medium transition-all ${
+                          !form.childName || isCreating
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                        }`}
+                        aria-busy={isCreating}
+                      >
+                        {isCreating ? (
+                          <span className="inline-flex items-center gap-2">
+                            <span className="inline-block h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                            Recording...
+                          </span>
+                        ) : (
+                          "Record Vaccination"
+                        )}
+                      </button>
+
+                      {feedback.message && (
+                        <div
+                          className={`mt-3 px-3 py-2 rounded text-sm ${
+                            feedback.type === 'success'
+                              ? 'bg-green-50 text-green-700 border border-green-200'
+                              : 'bg-red-50 text-red-700 border border-red-200'
+                          }`}
+                        >
+                          {feedback.message}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Info Card for Parents - Only show when in parent mode */}
+              {viewMode === "parent" && (
+                <div className="lg:col-span-2">
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-gradient-to-r from-teal-600 to-green-600 px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <Eye className="h-6 w-6 text-white" />
+                        <h2 className="text-xl font-semibold text-white">Vaccination Records</h2>
+                      </div>
+                    </div>
+                    
+                    <div className="p-8 text-center">
+                      <div className="mx-auto w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-6">
+                        <Shield className="h-8 w-8 text-teal-600" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                        Your Child's Immunization History
+                      </h3>
+                      <p className="text-gray-600 mb-6 leading-relaxed">
+                        This page displays all vaccination records for your child as recorded by healthcare providers. 
+                        Only authorized medical professionals can add new vaccination entries to ensure accuracy and security.
+                      </p>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center justify-center space-x-2 text-blue-700">
+                          <Shield className="h-5 w-5" />
+                          <span className="font-medium">Secure Medical Records</span>
+                        </div>
+                        <p className="text-blue-600 text-sm mt-2">
+                          All records are maintained by qualified healthcare providers
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Sidebar */}
-              <div className="space-y-6">
+              <div className={`space-y-6 ${viewMode === "parent" ? "lg:col-span-2" : ""}`}>
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="p-2 bg-indigo-100 rounded-lg">
@@ -546,7 +588,9 @@ const ProfessionalVaccinationUI = () => {
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
                     <FileText className="h-5 w-5" />
-                    <span>Vaccination History - {selectedParent.fullName}</span>
+                    <span>
+                      {viewMode === "parent" ? "My Child's Vaccination History" : `Vaccination History - ${selectedParent.fullName}`}
+                    </span>
                   </h3>
                 </div>
                 
@@ -600,7 +644,10 @@ const ProfessionalVaccinationUI = () => {
                       </div>
                       <h4 className="text-lg font-medium text-gray-900 mb-2">No Records Found</h4>
                       <p className="text-gray-600 max-w-md mx-auto">
-                        No vaccination records found for {selectedParent.fullName}. Add the first record using the form above.
+                        {viewMode === "parent" 
+                          ? "No vaccination records found for your child. Records will appear here when added by healthcare providers."
+                          : `No vaccination records found for ${selectedParent.fullName}. Add the first record using the form above.`
+                        }
                       </p>
                     </div>
                   )}
