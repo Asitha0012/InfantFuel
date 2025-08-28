@@ -38,6 +38,8 @@ const Navbar = () => {
       "/nutrition-tracking",
       "/nutrisolid-tracking",
       "/nutrifluid-tracking",
+      "/height-tracking",
+      "/head-circumference-tracking",
       "/tracker"
     ];
     if (trackerRoutes.some(route => location.pathname.startsWith(route))) return "Tracker";
@@ -64,7 +66,7 @@ const Navbar = () => {
 
   useEffect(() => {
     // Find the best matching tab for the current path (longest path match)
-    if (["/weight-tracking", "/growth-tracking",].includes(location.pathname)) {
+    if (["/weight-tracking", "/growth-tracking", "/height-tracking", "/head-circumference-tracking"].includes(location.pathname)) {
       setActiveTab("Tracker");
       return;
     }
@@ -127,7 +129,7 @@ const Navbar = () => {
 
     try {
       await Promise.race([logoutPromise, timeout]);
-    } catch (err) {
+  } catch {
       // ignore network errors — proceed to clear client state
     }
 
@@ -141,8 +143,25 @@ const Navbar = () => {
     navigate("/profile");
   };
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <nav className="bg-white border-b-4 border-orange-300 shadow-sm">
+    <>
+    <nav
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      className={`fixed top-0 inset-x-0 z-50 bg-white border-b-4 border-orange-300 shadow-sm transition-opacity duration-200 ${
+        isScrolled && !isHovering ? "opacity-80" : "opacity-100"
+      }`}
+    >
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
         {/* Logo */}
         <div className="flex items-center">
@@ -293,7 +312,10 @@ const Navbar = () => {
           </div>
         </div>
       )}
-    </nav>
+  </nav>
+  {/* Spacer to offset fixed navbar height */}
+  <div aria-hidden="true" className="h-20" />
+  </>
   );
 };
 
