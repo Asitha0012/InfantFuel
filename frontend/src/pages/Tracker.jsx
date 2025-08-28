@@ -20,6 +20,7 @@ import {
   CalendarDays,
   Activity,
   X,
+  FileText,
 } from 'lucide-react';
 
 import {
@@ -333,12 +334,15 @@ const Tracker = () => {
 
           {/* Health Section */}
           <Section title="Health" icon={Syringe} theme="rose">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
             <section title="vaccine" onClick={() => navigate('/health-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={Syringe} label="Vaccination" />
             </section>
             <section title="medicine" onClick={() => navigate('/medication-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={Pill} label="Medication" />
+            </section>
+            <section title="report" onClick={() => navigate('/health-report')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+                <TrackingCard icon={FileText} label="Health Report" />
             </section>
             </div>
           </Section>
@@ -350,7 +354,7 @@ const Tracker = () => {
                 <thead>
                   <tr className="text-left text-gray-600">
                     <th className="pb-2">Activity</th>
-                    <th className="pb-2">Date and Time</th>
+                    <th className="pb-2">Date</th>
                     <th className="pb-2">Updated by</th>
                   </tr>
                 </thead>
@@ -373,10 +377,7 @@ const Tracker = () => {
                             </span>
                           </td>
                           <td className="py-2 text-gray-700">
-                            {item.date.toLocaleDateString()} at {item.date.toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
+                            {item.date.toLocaleDateString()}
                           </td>
                           <td className="py-2">
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-green-200">
@@ -507,12 +508,6 @@ const Tracker = () => {
                                 year: 'numeric', 
                                 month: 'short', 
                                 day: 'numeric' 
-                              })}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {activity.date.toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
                               })}
                             </p>
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-green-200 mt-1">

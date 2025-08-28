@@ -40,6 +40,7 @@ const Navbar = () => {
       "/nutrifluid-tracking",
       "/height-tracking",
       "/head-circumference-tracking",
+      "/health-report",
       "/tracker"
     ];
     if (trackerRoutes.some(route => location.pathname.startsWith(route))) return "Tracker";
@@ -70,7 +71,7 @@ const Navbar = () => {
       setActiveTab("Tracker");
       return;
     }
-    if (["/medication-tracking", "/health-tracking","/nutrition-tracking","/nutrisolid-tracking","/nutrifluid-tracking",].includes(location.pathname)) {
+    if (["/medication-tracking", "/health-tracking","/nutrition-tracking","/nutrisolid-tracking","/nutrifluid-tracking","/health-report"].includes(location.pathname)) {
       setActiveTab("Tracker");
       return;
     }

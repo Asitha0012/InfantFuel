@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetmedicationsQuery, useCreatemedicationsMutation } from "../redux/api/medications";
 import { useGetParentsQuery } from "../redux/api/users";
-import { Pill, Calendar, User, FileText, Shield, Clock, CheckCircle, Search, ArrowLeft, Eye, Plus } from 'lucide-react';
+import { Pill, Calendar, User, FileText, Shield, Clock, CheckCircle, Search, ArrowLeft, Eye } from 'lucide-react';
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 
@@ -555,7 +555,7 @@ const ProfessionalMedicationUI = () => {
                         <Shield className="h-8 w-8 text-teal-600" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                        Your Child's Prescription History
+                        Your Child&apos;s Prescription History
                       </h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">
                         This page displays all medication records for your child as recorded by healthcare providers.
