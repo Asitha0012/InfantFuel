@@ -23,8 +23,8 @@ const Footer = () => {
             <Link to="/about" className="hover:text-purple-700 transition">About Us</Link>
             <Link to="/contact" className="hover:text-purple-700 transition">Contact Us</Link>
             <Link to="/termsandconditions" className="hover:text-purple-700 transition">Privacy Policy</Link>
-            <Link to="/Network" className="hover:text-purple-700 transition">Help</Link>
-            <Link to="/articles" className="hover:text-purple-700 transition">Articles</Link>
+            <Link to="/contact" className="hover:text-purple-700 transition">Help</Link>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11590794/" target="_blank" rel="noopener noreferrer" className="hover:text-purple-700 transition">Articles</a>
           </div>
           <div className="flex gap-4 mt-3">
             <a href="#" aria-label="Facebook" className="hover:text-blue-600 transition"><Facebook size={20} /></a>
@@ -37,8 +37,8 @@ const Footer = () => {
         {/* Right: Contact Info */}
         <div className="text-center md:text-right space-y-2 text-sm">
           <p className="font-semibold text-gray-700">Contact</p>
-          <p>345 Faulconer Drive, Suite 4<br />Charlottesville, VA 12345</p>
-          <p>(123) 456-7890</p>
+          <p>Group 05<br />Hapugala, Galle</p>
+          <p>(011) 956-7890</p>
           <p className="text-purple-700 font-medium">InfantFuel@xyz.com</p>
         </div>
       </div>
