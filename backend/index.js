@@ -18,6 +18,8 @@ import vaccinationRoutes from "./routes/vaccinationRoutes.js";
 import medicationRoutes from "./routes/medicationRoutes.js";
 import heightRoutes from "./routes/heightRoutes.js";
 import headCircumferenceRoutes from "./routes/headCircumferenceRoutes.js";
+import nutritionFluidRoutes from "./routes/nutritionFluidRoutes.js";
+import nutritionSolidRoutes from "./routes/nutritionSolidRoutes.js";
 
 
 
@@ -47,6 +49,8 @@ app.use("/api/v1/heights", heightRoutes);
 app.use("/api/v1/head-circumference", headCircumferenceRoutes);
 app.use("/api/v1/vaccinations", vaccinationRoutes);
 app.use("/api/v1/medications", medicationRoutes);
+app.use("/api/v1/nutrition-fluid", nutritionFluidRoutes);
+app.use("/api/v1/nutrition-solid", nutritionSolidRoutes);
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
 
