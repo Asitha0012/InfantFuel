@@ -19,6 +19,7 @@ import {
   Pill,
   CalendarDays,
   Activity,
+  X,
 } from 'lucide-react';
 
 import {
@@ -27,6 +28,10 @@ import {
   useUpdateEventMutation,
   useDeleteEventMutation,
 } from '../redux/api/events';
+import { useGetConnectedBabyProfilesQuery, useGetWeightHistoryQuery } from '../redux/api/weights';
+import { useGetHeightHistoryQuery } from '../redux/api/heights';
+import { useGetVaccinationsQuery } from '../redux/api/vaccinations';
+import { useGetmedicationsQuery } from '../redux/api/medications';
 import { useSelector } from "react-redux";
 import Modal from "../Components/Modal";
 import PropTypes from "prop-types";
@@ -132,13 +137,93 @@ const Tracker = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [viewMode, setViewMode] = useState(false);
+  const [activitiesModalOpen, setActivitiesModalOpen] = useState(false);
 
-  const recentActivities = [
-    { activity: 'Weight', date: '09/12/2024 at 10.30am', updatedBy: 'Midwife' },
-    { activity: 'Height', date: '09/12/2024 at 10:00am', updatedBy: 'Midwife' },
-    { activity: 'Vaccination', date: '08/12/2024 at 9:00am', updatedBy: 'Midwife' },
-    { activity: 'Breastfeed', date: '08/12/2024 at 10:00am', updatedBy: 'Parent' },
-  ];
+  // Fetch data for recent activities
+  const isProvider = userInfo?.isAdmin === true;
+  const { data: connectedProfiles = [] } = useGetConnectedBabyProfilesQuery(undefined, { skip: !isProvider });
+  const { data: weightData } = useGetWeightHistoryQuery(isProvider ? connectedProfiles[0]?._id : userInfo?._id, { 
+    skip: !userInfo?._id && !(isProvider && connectedProfiles.length > 0) 
+  });
+  const { data: heightData } = useGetHeightHistoryQuery(isProvider ? connectedProfiles[0]?._id : userInfo?._id, { 
+    skip: !userInfo?._id && !(isProvider && connectedProfiles.length > 0) 
+  });
+  const { data: vaccinations = [] } = useGetVaccinationsQuery();
+  const { data: medications = [] } = useGetmedicationsQuery();
+
+  // Aggregate and sort recent activities
+  const getRecentActivities = (limit = 5) => {
+    const activities = [];
+    const currentUserId = userInfo?._id;
+
+    // Add weight entries
+    if (weightData?.entries) {
+      weightData.entries.forEach(entry => {
+        if (!isProvider || entry.recordedBy?._id === currentUserId) {
+          activities.push({
+            type: 'Weight',
+            date: new Date(entry.dateRecorded),
+            updatedBy: entry.recordedBy?.fullName || 'Unknown',
+            value: `${entry.weight} kg`,
+            notes: entry.notes,
+            id: entry._id
+          });
+        }
+      });
+    }
+
+    // Add height entries
+    if (heightData?.entries) {
+      heightData.entries.forEach(entry => {
+        if (!isProvider || entry.recordedBy?._id === currentUserId) {
+          activities.push({
+            type: 'Height',
+            date: new Date(entry.dateRecorded),
+            updatedBy: entry.recordedBy?.fullName || 'Unknown',
+            value: `${entry.height} cm`,
+            notes: entry.notes,
+            id: entry._id
+          });
+        }
+      });
+    }
+
+    // Add vaccination entries
+    vaccinations.forEach(vaccination => {
+      if (!isProvider || vaccination.createdBy === currentUserId) {
+        activities.push({
+          type: 'Vaccination',
+          date: new Date(vaccination.dateAdministered || vaccination.createdAt),
+          updatedBy: vaccination.administeredBy || 'Healthcare Provider',
+          value: vaccination.vaccineName,
+          notes: vaccination.notes,
+          id: vaccination._id
+        });
+      }
+    });
+
+    // Add medication entries
+    medications.forEach(medication => {
+      if (!isProvider || medication.createdBy === currentUserId) {
+        activities.push({
+          type: 'Medication',
+          date: new Date(medication.startDate || medication.createdAt),
+          updatedBy: medication.prescribedBy || 'Healthcare Provider',
+          value: medication.medicationName,
+          notes: medication.notes,
+          id: medication._id
+        });
+      }
+    });
+
+    // Sort by date (newest first) and return limited results
+    return activities
+      .sort((a, b) => b.date - a.date)
+      .slice(0, limit);
+  };
+
+  const recentActivities = getRecentActivities(5);
+  const allRecentActivities = getRecentActivities(10);
 
   // Group events by date for FullCalendar (multiple events per day)
   const calendarEvents = events.map((e) => ({
@@ -259,7 +344,7 @@ const Tracker = () => {
           </Section>
 
           {/* Recent Activities Section */}
-          <Section title="Recent Activities" icon={Activity} theme="amber" onClick={() => navigate('/recent-activities')}>
+          <Section title="Recent Activities" icon={Activity} theme="amber" onClick={() => setActivitiesModalOpen(true)}>
             <div className="bg-white rounded-lg p-4">
               <table className="w-full text-sm">
                 <thead>
@@ -270,31 +355,48 @@ const Tracker = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentActivities.map((item, index) => {
-                    const Icon =
-                      item.activity === 'Weight' ? Scale :
-                      item.activity === 'Height' ? Ruler :
-                      item.activity === 'Vaccination' ? Syringe :
-                      item.activity === 'Breastfeed' ? Baby : Activity;
-                    return (
-                      <tr key={index} className="border-t">
-                        <td className="py-2">
-                          <span className="inline-flex items-center gap-2">
-                            <span className="p-1.5 rounded-md bg-indigo-50 text-indigo-600">
-                              <Icon className="w-4 h-4" />
+                  {recentActivities.length > 0 ? (
+                    recentActivities.map((item, index) => {
+                      const Icon =
+                        item.type === 'Weight' ? Scale :
+                        item.type === 'Height' ? Ruler :
+                        item.type === 'Vaccination' ? Syringe :
+                        item.type === 'Medication' ? Pill : Activity;
+                      return (
+                        <tr key={item.id || index} className="border-t">
+                          <td className="py-2">
+                            <span className="inline-flex items-center gap-2">
+                              <span className="p-1.5 rounded-md bg-indigo-50 text-indigo-600">
+                                <Icon className="w-4 h-4" />
+                              </span>
+                              <span className="font-medium text-gray-800">{item.type}</span>
                             </span>
-                            <span className="font-medium text-gray-800">{item.activity}</span>
-                          </span>
-                        </td>
-                        <td className="py-2 text-gray-700">{item.date}</td>
-                        <td className="py-2">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-green-200">
-                            {item.updatedBy}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          </td>
+                          <td className="py-2 text-gray-700">
+                            {item.date.toLocaleDateString()} at {item.date.toLocaleTimeString([], { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </td>
+                          <td className="py-2">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-green-200">
+                              {item.updatedBy}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="py-8 text-center text-gray-500">
+                        <div className="flex flex-col items-center">
+                          <Activity className="w-8 h-8 text-gray-300 mb-2" />
+                          <p>No recent activities found</p>
+                          <p className="text-sm">Start tracking to see activities here</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -343,6 +445,97 @@ const Tracker = () => {
           viewMode={viewMode}
           userInfo={userInfo}
         />
+      )}
+      
+      {/* Activities Modal for expanded view */}
+      {activitiesModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Recent Activities {isProvider ? '(Your Records)' : ''}
+              </h2>
+              <button
+                onClick={() => setActivitiesModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {allRecentActivities.length > 0 ? (
+                <div className="space-y-4">
+                  {allRecentActivities.map((activity, index) => (
+                    <div key={activity.id || index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex-shrink-0">
+                        {activity.type === 'Weight' && (
+                          <div className="p-2 bg-blue-100 rounded-full">
+                            <Scale className="h-6 w-6 text-blue-600" />
+                          </div>
+                        )}
+                        {activity.type === 'Height' && (
+                          <div className="p-2 bg-green-100 rounded-full">
+                            <Ruler className="h-6 w-6 text-green-600" />
+                          </div>
+                        )}
+                        {activity.type === 'Vaccination' && (
+                          <div className="p-2 bg-purple-100 rounded-full">
+                            <Syringe className="h-6 w-6 text-purple-600" />
+                          </div>
+                        )}
+                        {activity.type === 'Medication' && (
+                          <div className="p-2 bg-orange-100 rounded-full">
+                            <Pill className="h-6 w-6 text-orange-600" />
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-gray-900">{activity.type}</h3>
+                            <p className="text-lg text-gray-700 font-semibold">{activity.value}</p>
+                            {activity.notes && (
+                              <p className="text-sm text-gray-600 mt-1">{activity.notes}</p>
+                            )}
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-sm text-gray-500">
+                              {activity.date.toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {activity.date.toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </p>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-green-200 mt-1">
+                              {activity.updatedBy}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Activities Yet</h3>
+                  <p className="text-gray-500">
+                    Start tracking weight, height, vaccinations, and medications to see activities here.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
