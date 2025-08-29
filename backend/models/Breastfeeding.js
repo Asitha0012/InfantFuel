@@ -1,22 +1,45 @@
 import mongoose from "mongoose";
 
-const breastfeedingSchema = new mongoose.Schema({
-  parentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  parentName: { type: String, required: true },
-  childName: { type: String, required: true },
-  feedingType: { type: String, required: true, enum: ["breastfeeding", "bottle", "mixed"] },
-  duration: { type: Number }, // in minutes
-  amount: { type: Number }, // in ml for bottle feeding
-  date: { type: Date, required: true },
-  notes: { type: String },
-  createdBy: {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    name: String,
-    position: String,
+const breastfeedingEntrySchema = mongoose.Schema({
+  duration: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 60 // Maximum 60 minutes per session
   },
-  createdAt: { type: Date, default: Date.now },
-});
+  side: {
+    type: String,
+    enum: ["left", "right", "both"],
+    required: true
+  },
+  dateRecorded: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  recordedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  notes: {
+    type: String,
+    maxlength: 500
+  }
+}, { timestamps: true });
+
+const breastfeedingSchema = mongoose.Schema({
+  babyProfile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  entries: [breastfeedingEntrySchema]
+}, { timestamps: true });
+
+// Index for efficient queries
+breastfeedingSchema.index({ babyProfile: 1 });
+breastfeedingSchema.index({ "entries.dateRecorded": -1 });
 
 const Breastfeeding = mongoose.model("Breastfeeding", breastfeedingSchema);
-
 export default Breastfeeding;

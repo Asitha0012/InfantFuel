@@ -320,7 +320,7 @@ const Tracker = () => {
           {/* Nutrition Tracking Section */}
           <Section title="Nutrition Tracking" icon={Baby} theme="emerald">
             <div className="grid grid-cols-3 gap-4">
-            <section title="vaccine" onClick={() => navigate('/nutrition-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
+            <section title="breastfeeding" onClick={() => navigate('/breastfeeding-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
                 <TrackingCard icon={Baby} label="Breastfeeding" />
             </section>
             <section title="vaccine" onClick={() => navigate('/nutrifluid-tracking')} className="bg-white rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-md transition cursor-pointer">
