@@ -18,15 +18,9 @@ const authenticate = asyncHandler(async (req, res, next) => {
       req.user = await User.findById(decoded.userId).select("-password");
 
       if (!req.user) {
-        console.log("Auth failed: User not found");
         res.status(404);
         throw new Error("User not found.");
       }
-      
-      console.log("Authenticated user:", {
-        id: req.user._id,
-        isAdmin: req.user.isAdmin
-      });
 
       next();
     } catch (error) {
