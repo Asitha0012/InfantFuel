@@ -48,14 +48,6 @@ const BreastfeedingEntryForm = ({
     setStopwatchInterval(interval);
   };
 
-  // Auto-start stopwatch for new entries
-  useEffect(() => {
-    if (!editEntry && !isStopwatchRunning && stopwatchTime === 0) {
-      // Auto-start for new entries
-      startStopwatch();
-    }
-  }, [editEntry]);
-
   const pauseStopwatch = () => {
     setIsStopwatchRunning(false);
     if (stopwatchInterval) {
@@ -274,7 +266,7 @@ const BreastfeedingEntryForm = ({
 
           {/* Instructions */}
           <div className="mt-3 text-xs text-gray-600 text-center">
-            <p className="mb-1">💡 <strong>Quick Start:</strong> Timer starts automatically for new entries!</p>
+            <p className="mb-1">💡 <strong>Quick Start:</strong> Click the Start button to begin timing!</p>
             <p className="mb-1">⏸️ <strong>Pause:</strong> Use if you need to stop temporarily</p>
             <p className="mb-1">⏹️ <strong>Stop & Set:</strong> Ends session and sets duration in form</p>
             <p className="mb-1">🔄 <strong>Reset:</strong> Clears timer and form duration</p>
