@@ -1,32 +1,37 @@
 import NutritionFluid from "../models/NutritionFluid.js";
 import { createNotification } from "../utils/notify.js";
+import mongoose from "mongoose";
 
 // Create fluid intake record (Parent only)
 const createFluidIntake = async (req, res) => {
   try {
-    // Debug logs
-    console.log("========================");
-    console.log("Creating Fluid Intake Record");
-    console.log("User:", req.user);
-    console.log("Request body:", req.body);
-    console.log("========================");
-
     // Only parents can create records
     if (req.user.isAdmin) {
-      console.log("Rejected: User is admin");
       return res.status(403).json({ message: "Only parents can add fluid intake records" });
     }
 
     const { childName, fluidType, amount, unit, time, notes } = req.body;
 
+    // Auto-map child name from parent's profile
+    const effectiveChildName = req.user?.babyDetails?.fullName || childName;
+    if (!effectiveChildName) {
+      return res.status(400).json({ message: "Child name missing. Please ensure baby profile is completed." });
+    }
+
+    // Validate amount
+    const amountNum = Number(amount);
+    if (!amount || Number.isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ message: "Amount must be a positive number" });
+    }
+
     const fluidIntake = new NutritionFluid({
-      childName,
-      parentId: req.user._id, // Set the logged-in parent's ID
+      childName: effectiveChildName,
+      parentId: req.user._id,
       fluidType,
-      amount,
+      amount: amountNum,
       unit,
-      time: time || new Date(),
-      notes
+      time: time ? new Date(time) : new Date(),
+      notes,
     });
 
     await fluidIntake.save();
@@ -37,20 +42,29 @@ const createFluidIntake = async (req, res) => {
   }
 };
 
-// Get fluid intake records (Both parent and health provider)
+// Get fluid intake records (Both parent and healthcare provider)
 const getFluidIntakeRecords = async (req, res) => {
   try {
-    const { childName, startDate, endDate } = req.query;
+    const { childName, startDate, endDate, fluidType, parentId } = req.query;
     let query = {};
 
-    // If user is parent, only show their records
+    // If user is parent, only show their records; providers can filter by parentId
     if (!req.user.isAdmin) {
       query.parentId = req.user._id;
+    } else if (parentId) {
+      try {
+        query.parentId = new mongoose.Types.ObjectId(parentId);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid parentId" });
+      }
     }
 
-    // If health provider and childName is provided, filter by childName
     if (childName) {
       query.childName = childName;
+    }
+
+    if (fluidType) {
+      query.fluidType = fluidType;
     }
 
     // Add date range filter if provided
@@ -126,15 +140,21 @@ const deleteFluidIntake = async (req, res) => {
   }
 };
 
-// Get summary statistics (Both parent and health provider)
+// Get summary statistics (Both parent and healthcare provider)
 const getFluidIntakeStats = async (req, res) => {
   try {
-    const { childName, startDate, endDate } = req.query;
+    const { childName, startDate, endDate, parentId } = req.query;
     let query = {};
 
-    // If user is parent, only show their records
+    // If user is parent, only show their records; providers can filter by parentId
     if (!req.user.isAdmin) {
       query.parentId = req.user._id;
+    } else if (parentId) {
+      try {
+        query.parentId = new mongoose.Types.ObjectId(parentId);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid parentId" });
+      }
     }
 
     if (childName) {
@@ -148,7 +168,7 @@ const getFluidIntakeStats = async (req, res) => {
       };
     }
 
-    const stats = await NutritionFluid.aggregate([
+  const stats = await NutritionFluid.aggregate([
       { $match: query },
       {
         $group: {
