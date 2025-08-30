@@ -21,6 +21,7 @@ import Nutrisolid from './pages/nutrisolid';
 import Weight from './pages/Tracker/Weight';
 import Height from './pages/Tracker/Height';
 import Breastfeeding from './pages/Tracker/Breastfeeding';
+import HeadCircumference from './pages/Tracker/HeadCircumference';
 import Report from './pages/Report';
 import PrivateRoute from './pages/Auth/PrivateRoute';
 
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
           <Route path="/weight-tracking" element={<Weight />} />
           <Route path="/height-tracking" element={<Height />} />
+          <Route path="/head-circumference-tracking" element={<HeadCircumference />} />
           <Route path="/breastfeeding-tracking" element={<Breastfeeding />} />
           <Route path="/growth-tracking" element={<Weight />} />
           <Route path="/health-report" element={<Report />} />

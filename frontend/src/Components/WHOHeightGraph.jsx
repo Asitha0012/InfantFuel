@@ -61,7 +61,7 @@ const WHOHeightGraph = ({ entries = [], babyProfile = {}, showWHO = true }) => {
   CustomTooltip.propTypes = {
     active: PropTypes.bool,
     payload: PropTypes.array,
-    label: PropTypes.string
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
   };
 
   return (
