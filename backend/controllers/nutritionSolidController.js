@@ -1,5 +1,6 @@
 import NutritionSolid from "../models/NutritionSolid.js";
 import { createNotification } from "../utils/notify.js";
+import mongoose from "mongoose";
 
 // Create solid food intake record (Parent only)
 const createSolidFoodIntake = async (req, res) => {
@@ -9,8 +10,6 @@ const createSolidFoodIntake = async (req, res) => {
       return res.status(403).json({ message: "Only parents can add solid food intake records" });
     }
     
-    console.log("User attempting to create record:", req.user); // Debug log
-
     const { 
       childName, 
       foodType, 
@@ -23,17 +22,29 @@ const createSolidFoodIntake = async (req, res) => {
       reaction 
     } = req.body;
 
+    // Auto-map child name from the parent's profile (single-child assumption)
+    const effectiveChildName = req.user?.babyDetails?.fullName || childName;
+    if (!effectiveChildName) {
+      return res.status(400).json({ message: "Child name missing. Please ensure baby profile is completed." });
+    }
+
+    // Basic validations and normalizations
+    const amountNum = Number(amount);
+    if (!amount || Number.isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ message: "Amount must be a positive number" });
+    }
+
     const solidFoodIntake = new NutritionSolid({
-      childName,
+      childName: effectiveChildName,
       parentId: req.user._id, // Set the logged-in parent's ID
       foodType,
       foodName,
-      amount,
+      amount: amountNum,
       unit,
       mealTime,
-      time: time || new Date(),
+      time: time ? new Date(time) : new Date(),
       notes,
-      reaction
+      reaction: reaction || null,
     });
 
     await solidFoodIntake.save();
@@ -44,15 +55,24 @@ const createSolidFoodIntake = async (req, res) => {
   }
 };
 
-// Get solid food intake records (Both parent and health provider)
+// Get solid food intake records (Both parent and healthcare provider)
+// Providers can filter by parentId (must be a connected parent enforced at frontend; optional server-side checks can be added later)
 const getSolidFoodRecords = async (req, res) => {
   try {
-    const { childName, startDate, endDate, foodType, mealTime } = req.query;
-    let query = {};
+  const { childName, startDate, endDate, foodType, mealTime, parentId } = req.query;
+  let query = {};
 
     // If user is parent, only show their records
     if (!req.user.isAdmin) {
       query.parentId = req.user._id;
+    } else if (parentId) {
+      // If healthcare provider, allow filtering by a specific parent
+      // Ensure ObjectId type for aggregations/queries
+      try {
+        query.parentId = new mongoose.Types.ObjectId(parentId);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid parentId" });
+      }
     }
 
     // Apply filters if provided
@@ -74,7 +94,7 @@ const getSolidFoodRecords = async (req, res) => {
       };
     }
 
-    const records = await NutritionSolid.find(query)
+  const records = await NutritionSolid.find(query)
       .sort({ time: -1 })
       .populate('parentId', 'fullName email');
 
@@ -139,15 +159,22 @@ const deleteSolidFoodIntake = async (req, res) => {
   }
 };
 
-// Get summary statistics (Both parent and health provider)
+// Get summary statistics (Both parent and healthcare provider)
+// Providers can filter by parentId
 const getSolidFoodStats = async (req, res) => {
   try {
-    const { childName, startDate, endDate } = req.query;
-    let query = {};
+  const { childName, startDate, endDate, parentId } = req.query;
+  let query = {};
 
     // If user is parent, only show their records
     if (!req.user.isAdmin) {
       query.parentId = req.user._id;
+    } else if (parentId) {
+      try {
+        query.parentId = new mongoose.Types.ObjectId(parentId);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid parentId" });
+      }
     }
 
     if (childName) {

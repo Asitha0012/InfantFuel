@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 const PageLayout = () => {
   const [selectedProfile, setSelectedProfile] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSelection = (event) => {
     setSelectedProfile(event.target.value);
+    setErrorMessage(""); // Clear error when user makes a selection
   };
 
   const onProceed = () => {
@@ -15,7 +17,7 @@ const PageLayout = () => {
     } else if (selectedProfile === "Healthcare Providers") {
       navigate("/profilehealth");
     } else {
-      alert("Please select a profile type before proceeding.");
+      setErrorMessage("Please select a profile type before proceeding.");
     }
   };
 
@@ -74,6 +76,9 @@ const PageLayout = () => {
               Healthcare Providers
             </label>
           </div>
+          {errorMessage && (
+            <p className="text-red-500 text-sm mb-3">{errorMessage}</p>
+          )}
           <button
             className="px-24 py-2 text-base text-white bg-indigo-500 rounded-md cursor-pointer hover:bg-blue-800"
             onClick={onProceed}

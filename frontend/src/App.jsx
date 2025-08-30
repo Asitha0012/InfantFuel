@@ -38,14 +38,16 @@ const App = () => {
         <Route path="/network" element={<Network />} />
         <Route path="/termsandconditions" element={<Termsandconditions />} />
         
+        {/* Registration Routes - Not Protected */}
+        <Route path="/parentprofile" element={<ProfileParent />} />
+        <Route path="/profilehealth" element={<Profilehealth />} />
+        
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/health-tracking" element={<Health />} />
           <Route path="/nutrition-tracking" element={<Nutrition />} />
           <Route path="/medication-tracking" element={<Medication />} />
-          <Route path="/register/parent" element={<ProfileParent />} />
-          <Route path="/register/healthcare" element={<Profilehealth />} />
           <Route path="/nutrifluid-tracking" element={<Nutrifluid />} />
           <Route path="/nutrisolid-tracking" element={<Nutrisolid />} />
           <Route path="/weight-tracking" element={<Weight />} />
@@ -53,8 +55,6 @@ const App = () => {
           <Route path="/breastfeeding-tracking" element={<Breastfeeding />} />
           <Route path="/growth-tracking" element={<Weight />} />
           <Route path="/health-report" element={<Report />} />
-          <Route path="/parentprofile" element={<ProfileParent />} />
-          <Route path="/Profilehealth" element={<Profilehealth />} />
         </Route>
         
    
